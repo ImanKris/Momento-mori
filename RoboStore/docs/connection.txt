@@ -1,0 +1,5 @@
+Сервер: RoboStore.mssql.somee.com
+База: RoboStore
+Логин: MomentoMori_SQLLogin_1
+Пароль: 
+
