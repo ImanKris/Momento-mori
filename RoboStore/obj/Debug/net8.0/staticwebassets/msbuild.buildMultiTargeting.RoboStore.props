@@ -1,3 +1,3 @@
 ﻿<Project>
-  <Import Project="../build/RoboStore.props" />
+  <Import Project="..\build\RoboStore.props" />
 </Project>

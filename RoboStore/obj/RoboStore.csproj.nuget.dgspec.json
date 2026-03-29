@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/vladimir/Documents/Momento-mori/RoboStore/RoboStore.csproj": {}
+    "C:\\Projects\\Momento-mori\\RoboStore\\RoboStore.csproj": {}
   },
   "projects": {
-    "/Users/vladimir/Documents/Momento-mori/RoboStore/RoboStore.csproj": {
+    "C:\\Projects\\Momento-mori\\RoboStore\\RoboStore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/vladimir/Documents/Momento-mori/RoboStore/RoboStore.csproj",
+        "projectUniqueName": "C:\\Projects\\Momento-mori\\RoboStore\\RoboStore.csproj",
         "projectName": "RoboStore",
-        "projectPath": "/Users/vladimir/Documents/Momento-mori/RoboStore/RoboStore.csproj",
-        "packagesPath": "/Users/vladimir/.nuget/packages/",
-        "outputPath": "/Users/vladimir/Documents/Momento-mori/RoboStore/obj/",
+        "projectPath": "C:\\Projects\\Momento-mori\\RoboStore\\RoboStore.csproj",
+        "packagesPath": "C:\\Users\\123\\.nuget\\packages\\",
+        "outputPath": "C:\\Projects\\Momento-mori\\RoboStore\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/vladimir/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\123\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -42,6 +42,20 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -61,7 +75,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/Users/vladimir/dotnet/sdk/8.0.419/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.419/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
