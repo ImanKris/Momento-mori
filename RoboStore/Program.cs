@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
-using RoboStore.Models;
-using System.Security.Cryptography;
-using System.Text;
+using RoboStore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<RoboStoreDbContext>();
+builder.Services.AddScoped<TelegramAuthService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -22,45 +22,58 @@ builder.Services.AddSession(options =>
 
 var app = builder.Build();
 
-// Seed users
-using (var scope = app.Services.CreateScope())
+// Добавляем колонки в базу если их нет
+try
 {
-    var db = scope.ServiceProvider.GetRequiredService<RoboStoreDbContext>();
-    db.Database.EnsureCreated();
+    using var conn = new SqlConnection(@"Server=RoboStore.mssql.somee.com;Database=RoboStore;User Id=MomentoMori_SQLLogin_1;Password=8rhd2k6i2g;TrustServerCertificate=True");
+    conn.Open();
 
-    string HashPassword(string password)
-    {
-        using var sha = SHA256.Create();
-        var bytes = Encoding.UTF8.GetBytes(password);
-        var hash = sha.ComputeHash(bytes);
-        return Convert.ToBase64String(hash);
-    }
+    // Добавляем Telegram-колонки если их нет
+    var alterCmd = new SqlCommand(@"
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'TelegramId')
+        BEGIN
+            ALTER TABLE Users ADD TelegramId BIGINT NULL
+        END
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'TelegramUsername')
+        BEGIN
+            ALTER TABLE Users ADD TelegramUsername NVARCHAR(MAX) NULL
+        END
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'FirstName')
+        BEGIN
+            ALTER TABLE Users ADD FirstName NVARCHAR(MAX) NULL
+        END
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'LastName')
+        BEGIN
+            ALTER TABLE Users ADD LastName NVARCHAR(MAX) NULL
+        END
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'PhotoUrl')
+        BEGIN
+            ALTER TABLE Users ADD PhotoUrl NVARCHAR(MAX) NULL
+        END", conn);
+    alterCmd.ExecuteNonQuery();
 
-    var manager1 = db.Users.FirstOrDefault(u => u.Login == "manager1");
-    if (manager1 == null)
-    {
-        db.Users.Add(new User { Login = "manager1", PasswordHash = HashPassword("ManagerMori"), Role = "Manager", IsVerified = true });
-    }
-    else
-    {
-        manager1.PasswordHash = HashPassword("ManagerMori");
-        manager1.Role = "Manager";
-        manager1.IsVerified = true;
-    }
+    // Обновляем существующих пользователей с пустым Login
+    var fixLoginCmd = new SqlCommand(@"
+        UPDATE Users SET Login = 'user_' + CAST(Id AS VARCHAR(10)) WHERE Login IS NULL OR Login = ''", conn);
+    fixLoginCmd.ExecuteNonQuery();
 
-    var admin1 = db.Users.FirstOrDefault(u => u.Login == "admin1");
-    if (admin1 == null)
-    {
-        db.Users.Add(new User { Login = "admin1", PasswordHash = HashPassword("AdminMori"), Role = "Admin", IsVerified = true });
-    }
-    else
-    {
-        admin1.PasswordHash = HashPassword("AdminMori");
-        admin1.Role = "Admin";
-        admin1.IsVerified = true;
-    }
-
-    db.SaveChanges();
+    // Добавляем админа и менеджера если их нет
+    var seedCmd = new SqlCommand(@"
+        IF NOT EXISTS (SELECT * FROM Users WHERE TelegramUsername = 'admin')
+        BEGIN
+            INSERT INTO Users (TelegramId, TelegramUsername, FirstName, LastName, Role, IsVerified, CreatedAt, Login)
+            VALUES (111111111, 'admin', 'Admin', 'User', 'Admin', 1, GETDATE(), 'admin')
+        END
+        IF NOT EXISTS (SELECT * FROM Users WHERE TelegramUsername = 'manager')
+        BEGIN
+            INSERT INTO Users (TelegramId, TelegramUsername, FirstName, LastName, Role, IsVerified, CreatedAt, Login)
+            VALUES (222222222, 'manager', 'Manager', 'User', 'Manager', 1, GETDATE(), 'manager')
+        END", conn);
+    seedCmd.ExecuteNonQuery();
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Note: Could not alter table: {ex.Message}");
 }
 
 app.UseSession();

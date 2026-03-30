@@ -1,20 +1,47 @@
 @{
-    ViewData["Title"] = "Вход";
+    ViewData["Title"] = "Вход через Telegram";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow">
+                <div class="card-body text-center p-5">
+                    <h2 class="mb-4">RoboStore</h2>
+                    <p class="text-muted mb-4">Войдите через Telegram для доступа к магазину</p>
 
-<form asp-action="Login" method="post">
+                    <!-- Telegram Login Widget -->
+                    <script async src="https://telegram.org/js/telegram-widget.js?21" data-telegram-login="RoboStoreMoriBot" data-size="large" data-radius="10" data-auth-url="/Account/Callback" data-request-access="write"></script>
 
-    <div class="form-group mb-3">
-        <label class="form-label">Логин:</label>
-        <input name="login" class="form-control" placeholder="Введите логин" />
+                    <div class="mt-4">
+                        <small class="text-muted">
+                            Нажимая кнопку выше, вы соглашаетесь с условиями использования
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 
-    <div class="form-group mb-3">
-        <label class="form-label">Пароль:</label>
-        <input name="password" class="form-control" type="password" placeholder="Введите пароль" />
-    </div>
-
-    <button type="submit" class="btn btn-primary mt-3">Войти</button>
-</form>
+<style>
+    .card {
+        border: none;
+        border-radius: 16px;
+    }
+    .card-body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 16px;
+        color: white;
+    }
+    .card-body h2 {
+        color: white;
+        font-weight: 700;
+    }
+    .card-body .text-muted {
+        color: rgba(255,255,255,0.8) !important;
+    }
+    .card-body small {
+        color: rgba(255,255,255,0.6);
+    }
+</style>

@@ -1,0 +1,90 @@
+@model RoboStore.Models.User
+
+@{
+    ViewData["Title"] = "Личный кабинет";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.PhotoUrl))
+                    {
+                        <img src="@Model.PhotoUrl" alt="@Model.TelegramUsername" class="rounded-circle mb-3" width="100" height="100" />
+                    }
+                    else
+                    {
+                        <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:100px;height:100px;">
+                            <span class="text-white fs-2">@Model.FirstName?[0]</span>
+                        </div>
+                    }
+                    <h5>@Model.FirstName @Model.LastName</h5>
+                    @@@Model.TelegramUsername
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Личный кабинет</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>ID:</th>
+                            <td>@Model.Id</td>
+                        </tr>
+                        <tr>
+                            <th>Telegram ID:</th>
+                            <td>@Model.TelegramId</td>
+                        </tr>
+                        <tr>
+                            <th>Username:</th>
+                            <td>@@@Model.TelegramUsername</td>
+                        </tr>
+                        <tr>
+                            <th>Имя:</th>
+                            <td>@Model.FirstName @Model.LastName</td>
+                        </tr>
+                        <tr>
+                            <th>Роль:</th>
+                            <td><span class="badge bg-primary">@Model.Role</span></td>
+                        </tr>
+                        <tr>
+                            <th>Статус:</th>
+                            <td>
+                                @if (Model.IsVerified)
+                                {
+                                    <span class="badge bg-success">Верифицирован</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-warning">Не верифицирован</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Дата регистрации:</th>
+                            <td>@Model.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="card-footer">
+                    <form method="post" action="/Account/Logout" class="d-inline">
+                        <button type="submit" class="btn btn-danger">Выйти</button>
+                    </form>
+                    @if (Model.Role == "Admin")
+                    {
+                        <a href="/Admin" class="btn btn-primary">Панель администратора</a>
+                    }
+                    else if (Model.Role == "Manager")
+                    {
+                        <a href="/Manager" class="btn btn-primary">Панель менеджера</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

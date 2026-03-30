@@ -1,72 +1,96 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
 using RoboStore.Models;
+using RoboStore.Services;
 using System.Security.Claims;
+using System.Text;
 
 namespace RoboStore.Controllers;
 
 public class AccountController : Controller
 {
     private readonly RoboStoreDbContext _context;
+    private readonly TelegramAuthService _telegramAuth;
 
-    public AccountController(RoboStoreDbContext context)
+    public AccountController(RoboStoreDbContext context, TelegramAuthService telegramAuth)
     {
         _context = context;
+        _telegramAuth = telegramAuth;
     }
 
-    // GET: Показывает форму входа
+    // GET: Главная страница с виджетом Telegram
     [HttpGet]
     public IActionResult Login()
     {
         return View();
     }
-// POST: Обрабатывает вход
-    [HttpPost]
-    public async Task<IActionResult> Login(string login, string password)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == login);
 
+    // GET: Страница пользователя (личный кабинет)
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Dashboard()
+    {
+        var userIdClaim = User.FindFirst("UserId")?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        {
+            return RedirectToAction("Login");
+        }
+
+        var user = await _context.Users.FindAsync(userId);
         if (user == null)
         {
-            ModelState.AddModelError("", "Пользователь с таким логином не найден");
-            return View();
+            return RedirectToAction("Login");
         }
 
-        if (!VerifyPassword(password, user.PasswordHash))
+        return View(user);
+    }
+
+    // POST: Callback от Telegram Login Widget
+    [HttpPost]
+    public async Task<IActionResult> Callback([FromForm] TelegramLoginViewModel model)
+    {
+        // Проверяем hash
+        if (!ModelState.IsValid || string.IsNullOrEmpty(model.Hash))
         {
-            ModelState.AddModelError("", "Неверный пароль");
-            return View();
+            return BadRequest("Invalid data from Telegram");
         }
 
-        if (!user.IsVerified)
+        // Проверяем hash для безопасности
+        if (!ValidateData(model))
         {
-            ModelState.AddModelError("", "Аккаунт не верифицирован. Проверьте почту или телефон.");
-            return View();
+            return Unauthorized("Invalid hash");
         }
 
-        // Создаём claims для авторизации
+        // Проверяем что данные не устарели (не старше 1 дня)
+        var authDate = DateTimeOffset.FromUnixTimeSeconds(model.AuthDate);
+        if (DateTimeOffset.Now - authDate > TimeSpan.FromDays(1))
+        {
+            return Unauthorized("Data expired");
+        }
+
+        // Создаем или обновляем пользователя
+        var user = await _telegramAuth.CreateOrUpdateUserAsync(model);
+
+        // Создаем claims для авторизации
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.Login),
+            new Claim(ClaimTypes.Name, user.TelegramUsername ?? user.FirstName ?? "User"),
             new Claim(ClaimTypes.Role, user.Role),
-            new Claim("UserId", user.Id.ToString())
+            new Claim("UserId", user.Id.ToString()),
+            new Claim("TelegramId", user.TelegramId.ToString())
         };
 
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
+        // Вход в систему
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
-        // Перенаправляем в зависимости от роли
-        return user.Role switch
-        {
-            "Admin" => RedirectToAction("Index", "Admin"),
-            "Manager" => RedirectToAction("Index", "Manager"),
-            _ => RedirectToAction("Index", "Home")
-        };
+        // Редирект в личный кабинет
+        return RedirectToAction("Dashboard");
     }
 
     // POST: Выход
@@ -74,158 +98,45 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction("Login");
     }
 
-    // GET: Показывает форму регистрации
-    [HttpGet]
-    public IActionResult Register()
+    // Вспомогательный метод для проверки hash (можно вынести в сервис)
+    private bool ValidateData(TelegramLoginViewModel model)
     {
-        return View();
-    }
-
-    // POST: Обрабатывает регистрацию
-    [HttpPost]
-    public IActionResult Register(RegisterViewModel model)
-    {
-        if (!ModelState.IsValid)
+        // Формируем строку для проверки
+        // Telegram hash verification algorithm
+        var dataToHash = new SortedDictionary<string, string>
         {
-            return View(model);
-        }
-
-        // Показываем форму для ввода кода верификации
-        TempData["Login"] = model.Login;
-        TempData["Email"] = model.Email;
-        TempData["Phone"] = model.Phone;
-        TempData["Password"] = model.Password;
-
-        // Генерируем код
-        string code = new Random().Next(100000, 999999).ToString();
-        TempData["VerificationCode"] = code;
-        TempData["VerificationCodeTime"] = DateTime.Now.ToString();
-
-        // TODO: Отправить код на email или SMS
-
-        return View("VerifyCode", (object)model.Email);
-    }
-
-    // GET: Показывает форму ввода кода
-    [HttpGet]
-    public IActionResult VerifyCode()
-    {
-        if (TempData["Login"] == null)
-        {
-            return RedirectToAction("Register");
-        }
-        return View();
-    }
-
-    // POST: Проверяет код и завершает регистрацию
-    [HttpPost]
-    public async Task<IActionResult> ConfirmRegistration(string code)
-    {
-        string? storedCode = TempData["VerificationCode"] as string;
-        string? login = TempData["Login"] as string;
-        string? email = TempData["Email"] as string;
-        string? phone = TempData["Phone"] as string;
-        string? password = TempData["Password"] as string;
-
-        if (storedCode == null || storedCode != code)
-        {
-            ModelState.AddModelError("", "Неверный код");
-            return View("VerifyCode", email);
-        }
-
-        // Проверяем срок действия кода (10 минут)
-        if (TempData["VerificationCodeTime"] is string codeTimeStr &&
-            DateTime.TryParse(codeTimeStr, out var codeTime) &&
-            DateTime.Now - codeTime > TimeSpan.FromMinutes(10))
-        {
-            ModelState.AddModelError("", "Код устарел");
-            return View("VerifyCode", email);
-        }
-
-        // Создаём пользователя
-        var user = new User
-        {
-            Login = login!,
-            Email = email,
-            Phone = phone,
-            PasswordHash = HashPassword(password!),
-            Role = "User",
-            IsVerified = true
+            ["auth_date"] = model.AuthDate.ToString(),
+            ["first_name"] = model.FirstName ?? ""
         };
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        if (!string.IsNullOrEmpty(model.LastName))
+            dataToHash["last_name"] = model.LastName;
+        if (!string.IsNullOrEmpty(model.Username))
+            dataToHash["username"] = model.Username;
+        if (!string.IsNullOrEmpty(model.PhotoUrl))
+            dataToHash["photo_url"] = model.PhotoUrl;
+        if (model.Id > 0)
+            dataToHash["id"] = model.Id.ToString();
 
-        // Авторизуем
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Login),
-            new Claim(ClaimTypes.Role, user.Role),
-            new Claim("UserId", user.Id.ToString())
-        };
+        // Формируем строку "key=value\n" в алфавитном порядке
+        var dataCheckString = string.Join("\n", dataToHash.Select(kv => $"{kv.Key}={kv.Value}")) + "\n";
 
-        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+        // Вычисляем secret = HMAC-SHA256(bot_token, "WebAppData")
+        var secretKey = ComputeHmacSha256(Encoding.UTF8.GetBytes("8782323218:AAHmT7WLxWnmXLSWv3Bn30cbiqCW8REV-QE"), Encoding.UTF8.GetBytes("WebAppData"));
 
-        return RedirectToAction("Index", "Home");
+        // Вычисляем hash = HMAC-SHA256(secret, data_check_string)
+        var hash = ComputeHmacSha256(secretKey, Encoding.UTF8.GetBytes(dataCheckString));
+        var hashHex = Convert.ToHexString(hash).ToLower();
+
+        return hashHex == model.Hash?.ToLower();
     }
 
-    // POST: Отправляет код верификации
-    [HttpPost]
-    public IActionResult SendCode(string contact, string contactType)
+    private static byte[] ComputeHmacSha256(byte[] key, byte[] data)
     {
-        if (string.IsNullOrEmpty(contact))
-        {
-            return Json(new { success = false, message = "Укажите контакт для верификации" });
-        }
-
-        string code = new Random().Next(100000, 999999).ToString();
-
-        // TODO: Отправить код (email или SMS в зависимости от contactType)
-        // if (contactType == "email") { /* отправить на email */ }
-        // else { /* отправить SMS */ }
-
-        TempData["VerificationCode"] = code;
-        TempData["Contact"] = contact;
-        TempData["ContactType"] = contactType;
-
-        return Json(new { success = true, message = $"Код отправлен на {contact}" });
-    }
-
-    // POST: Проверяет код верификации
-    [HttpPost]
-    public IActionResult VerifyCode(string code, string contact, string contactType, string login, string password)
-    {
-        string? storedCode = TempData["VerificationCode"] as string;
-        string? storedContact = TempData["Contact"] as string;
-
-        if (storedCode != code || storedContact != contact)
-        {
-            return Json(new { success = false, message = "Неверный код" });
-        }
-
-        // TODO: Создать пользователя в базе данных
-        // TODO: Авторизовать пользователя
-
-        return Json(new { success = true, message = "Регистрация завершена" });
-    }
-
-    private static bool VerifyPassword(string password, string passwordHash)
-    {
-        // Простая проверка хеша (для production использовать BCrypt/Argon2)
-        return passwordHash == HashPassword(password);
-    }
-
-    private static string HashPassword(string password)
-    {
-        // Простой хеш (для production использовать BCrypt/Argon2)
-        using var sha = System.Security.Cryptography.SHA256.Create();
-        var bytes = System.Text.Encoding.UTF8.GetBytes(password);
-        var hash = sha.ComputeHash(bytes);
-        return Convert.ToBase64String(hash);
+        using var hmac = new System.Security.Cryptography.HMACSHA256(key);
+        return hmac.ComputeHash(data);
     }
 }
