@@ -2,13 +2,24 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
+<<<<<<< HEAD
 using RoboStore.Services;
+=======
+using RoboStore.Models;
+using RoboStore.Services;
+using System.Security.Cryptography;
+using System.Text;
+>>>>>>> 845866a2aa35226d43f74152fbeebe37cf99a478
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<RoboStoreDbContext>();
+<<<<<<< HEAD
 builder.Services.AddScoped<TelegramAuthService>();
+=======
+builder.Services.AddScoped<TelegramService>();
+>>>>>>> 845866a2aa35226d43f74152fbeebe37cf99a478
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {

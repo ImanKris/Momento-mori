@@ -264,6 +264,7 @@ C:/Projects/Momento-mori/RoboStore/obj/Debug/net8.0/refint/RoboStore.dll
 C:/Projects/Momento-mori/RoboStore/obj/Debug/net8.0/RoboStore.pdb
 C:/Projects/Momento-mori/RoboStore/obj/Debug/net8.0/RoboStore.genruntimeconfig.cache
 C:/Projects/Momento-mori/RoboStore/obj/Debug/net8.0/ref/RoboStore.dll
+<<<<<<< HEAD
 C:\Projects\Momento-mori\RoboStore\obj\Debug\net8.0\RoboStore.csproj.AssemblyReference.cache
 C:\Projects\Momento-mori\RoboStore\obj\Debug\net8.0\RoboStore.GeneratedMSBuildEditorConfig.editorconfig
 C:\Projects\Momento-mori\RoboStore\obj\Debug\net8.0\RoboStore.AssemblyInfoInputs.cache
@@ -397,3 +398,5 @@ C:\Projects\Momento-mori\RoboStore\obj\Debug\net8.0\scopedcss\bundle\RoboStore.s
 C:\Projects\Momento-mori\RoboStore\obj\Debug\net8.0\RoboStore.csproj.Up2Date
 C:\Projects\Momento-mori\RoboStore\obj\Debug\net8.0\RoboStore.genruntimeconfig.cache
 C:\Projects\Momento-mori\RoboStore\obj\Debug\net8.0\ref\RoboStore.dll
+=======
+>>>>>>> 845866a2aa35226d43f74152fbeebe37cf99a478
