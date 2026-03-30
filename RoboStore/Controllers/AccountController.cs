@@ -84,6 +84,96 @@ public class AccountController : Controller
         return View();
     }
 
+    // POST: Обрабатывает регистрацию
+    [HttpPost]
+    public IActionResult Register(RegisterViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        // Показываем форму для ввода кода верификации
+        TempData["Login"] = model.Login;
+        TempData["Email"] = model.Email;
+        TempData["Phone"] = model.Phone;
+        TempData["Password"] = model.Password;
+
+        // Генерируем код
+        string code = new Random().Next(100000, 999999).ToString();
+        TempData["VerificationCode"] = code;
+        TempData["VerificationCodeTime"] = DateTime.Now.ToString();
+
+        // TODO: Отправить код на email или SMS
+
+        return View("VerifyCode", (object)model.Email);
+    }
+
+    // GET: Показывает форму ввода кода
+    [HttpGet]
+    public IActionResult VerifyCode()
+    {
+        if (TempData["Login"] == null)
+        {
+            return RedirectToAction("Register");
+        }
+        return View();
+    }
+
+    // POST: Проверяет код и завершает регистрацию
+    [HttpPost]
+    public async Task<IActionResult> ConfirmRegistration(string code)
+    {
+        string? storedCode = TempData["VerificationCode"] as string;
+        string? login = TempData["Login"] as string;
+        string? email = TempData["Email"] as string;
+        string? phone = TempData["Phone"] as string;
+        string? password = TempData["Password"] as string;
+
+        if (storedCode == null || storedCode != code)
+        {
+            ModelState.AddModelError("", "Неверный код");
+            return View("VerifyCode", email);
+        }
+
+        // Проверяем срок действия кода (10 минут)
+        if (TempData["VerificationCodeTime"] is string codeTimeStr &&
+            DateTime.TryParse(codeTimeStr, out var codeTime) &&
+            DateTime.Now - codeTime > TimeSpan.FromMinutes(10))
+        {
+            ModelState.AddModelError("", "Код устарел");
+            return View("VerifyCode", email);
+        }
+
+        // Создаём пользователя
+        var user = new User
+        {
+            Login = login!,
+            Email = email,
+            Phone = phone,
+            PasswordHash = HashPassword(password!),
+            Role = "User",
+            IsVerified = true
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        // Авторизуем
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.Login),
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim("UserId", user.Id.ToString())
+        };
+
+        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+
+        return RedirectToAction("Index", "Home");
+    }
+
     // POST: Отправляет код верификации
     [HttpPost]
     public IActionResult SendCode(string contact, string contactType)
