@@ -1,0 +1,71 @@
+@model RoboStore.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Register" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Login"></label>
+        <input asp-for="Login" class="form-control" />
+        <span asp-validation-for="Login" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Способ связи:</label>
+        <div>
+            <input type="radio" name="ContactType" value="email" checked onclick="toggleContactInput()" /> Email
+            <input type="radio" name="ContactType" value="phone" onclick="toggleContactInput()" /> Телефон
+        </div>
+    </div>
+
+    <div class="form-group" id="emailGroup">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" type="email" id="emailField" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group" id="phoneGroup" style="display:none;">
+        <label asp-for="Phone"></label>
+        <input asp-for="Phone" class="form-control" type="tel" id="phoneField" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <script>
+        function toggleContactInput() {
+            var emailGroup = document.getElementById('emailGroup');
+            var phoneGroup = document.getElementById('phoneGroup');
+            var emailField = document.getElementById('emailField');
+            var phoneField = document.getElementById('phoneField');
+            var isEmail = document.querySelector('input[name="ContactType"]:checked').value === 'email';
+
+            emailGroup.style.display = isEmail ? 'block' : 'none';
+            phoneGroup.style.display = isEmail ? 'none' : 'block';
+            emailField.disabled = !isEmail;
+            phoneField.disabled = isEmail;
+        }
+        toggleContactInput();
+    </script>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" class="form-control" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="ConfirmPassword">Подтверждение пароля</label>
+        <input asp-for="ConfirmPassword" class="form-control" type="password" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

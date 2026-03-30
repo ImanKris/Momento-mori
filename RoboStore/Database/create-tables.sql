@@ -38,4 +38,4 @@ CREATE TABLE Logs (
     ActionType NVARCHAR(50) NOT NULL, -- LOGIN, SALE, ERROR, BACKUP
     Details NVARCHAR(MAX) NULL
 );
-салам алейкум
+
