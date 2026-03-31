@@ -5,7 +5,9 @@
       "Bash(where.exe dotnet:*)",
       "Read(//c/Program Files/dotnet/**)",
       "Read(//c/Program Files \\(x86\\)/dotnet/**)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(dotnet build:*)",
+      "Bash(taskkill //F //IM dotnet.exe)"
     ]
   }
 }

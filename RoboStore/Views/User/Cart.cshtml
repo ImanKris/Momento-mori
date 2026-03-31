@@ -1,55 +1,67 @@
-@model IEnumerable<RoboStore.Models.Robot>
+@model List<RoboStore.Models.Robot>
 
 @{
     ViewData["Title"] = "Корзина";
 }
 
-<h2>Корзина</h2>
+<h2 class="mb-4">Корзина</h2>
 
-@if (Model.Any())
+@if (TempData["Message"] != null)
 {
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Модель</th>
-                <th>Тип</th>
-                <th>Цена</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var robot in Model)
-            {
-                <tr>
-                    <td>@robot.Model</td>
-                    <td>@robot.Type</td>
-                    <td>@robot.Price.ToString("C")</td>
-                    <td>
-                        <a asp-action="RemoveFromCart" asp-route-id="@robot.Id" class="btn btn-danger btn-sm">Удалить</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="2"><strong>Итого:</strong></td>
-                <td><strong>@ViewBag.Total.ToString("C")</strong></td>
-                <td></td>
-            </tr>
-        </tfoot>
-    </table>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
 
-    <div class="btn-group">
-        <a asp-action="Checkout" class="btn btn-success btn-lg">Оформить заказ</a>
+@if (Model != null && Model.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Название робота</th>
+                    <th>Тип</th>
+                    <th>Цена</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@Model[i].Model</td>
+                        <td>@Model[i].Type</td>
+                        <td>@Model[i].Price.ToString("N0") руб.</td>
+                        <td>
+                            <a asp-action="RemoveFromCart" asp-route-id="@Model[i].Id" class="btn btn-danger btn-sm">Удалить</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="table-light">
+                <tr>
+                    <td colspan="3" class="text-end"><strong>Итого:</strong></td>
+                    <td class="fs-5 fw-bold text-success">@ViewBag.Total.ToString("N0") руб.</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+        <a asp-action="Checkout" class="btn btn-primary btn-lg">Оформить заказ</a>
         <a asp-action="ClearCart" class="btn btn-outline-secondary">Очистить корзину</a>
         <a asp-action="Index" class="btn btn-outline-primary">Продолжить покупки</a>
     </div>
 }
 else
 {
-    <div class="alert alert-info">
-        <h4>Корзина пуста</h4>
-        <p>Добавьте роботов из каталога.</p>
-        <a asp-action="Index" class="btn btn-primary">В каталог</a>
+    <div class="alert alert-info text-center py-5">
+        <h4 class="mb-3">Корзина пуста</h4>
+        <p class="text-muted">Добавьте роботов из каталога</p>
+        <a asp-action="Index" class="btn btn-primary">Перейти в каталог</a>
     </div>
 }
