@@ -3979,19 +3979,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\123\\.nuget\\packages\\": {}
+    "/Users/vladimir/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Projects\\Momento-mori\\RoboStore\\RoboStore.csproj",
+      "projectUniqueName": "/Users/vladimir/Documents/Momento-mori/RoboStore/RoboStore.csproj",
       "projectName": "RoboStore",
-      "projectPath": "C:\\Projects\\Momento-mori\\RoboStore\\RoboStore.csproj",
-      "packagesPath": "C:\\Users\\123\\.nuget\\packages\\",
-      "outputPath": "C:\\Projects\\Momento-mori\\RoboStore\\obj\\",
+      "projectPath": "/Users/vladimir/Documents/Momento-mori/RoboStore/RoboStore.csproj",
+      "packagesPath": "/Users/vladimir/.nuget/packages/",
+      "outputPath": "/Users/vladimir/Documents/Momento-mori/RoboStore/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\123\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "/Users/vladimir/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -4052,7 +4052,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.419/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/Users/vladimir/dotnet/sdk/8.0.419/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

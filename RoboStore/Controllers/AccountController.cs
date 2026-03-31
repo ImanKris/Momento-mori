@@ -23,34 +23,7 @@ public class AccountController : Controller
     {
         return View();
     }
-// POST: Проверяет логин и пароль
-[HttpPost]
-public IActionResult Login(string login, string password)
-{
-    // Ищем пользователя в базе
-    var user = _context.Users.FirstOrDefault(u => u.Login == login);
-    
-    // Если не нашли или пароль неверный
-    if (user == null || user.PasswordHash != HashPassword(password))
-    {
-        ViewBag.Error = "Неверный логин или пароль";
-        return View();
-    }
-    
-    // Создаем сессию (cookie)
-    HttpContext.Session.SetString("UserLogin", user.Login);
-    HttpContext.Session.SetString("UserRole", user.Role);
-    
-    // Перенаправляем в зависимости от роли
-    if (user.Role == "Admin")
-        return RedirectToAction("Index", "Admin");
-    else if (user.Role == "Manager")
-        return RedirectToAction("Index", "Manager");
-    else
-        return RedirectToAction("Index", "User");
-}
-
-    // POST: Обрабатывает вход
+// POST: Обрабатывает вход
     [HttpPost]
     public async Task<IActionResult> Login(string login, string password)
     {
