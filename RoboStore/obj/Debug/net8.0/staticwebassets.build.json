@@ -1,11 +1,19 @@
 {
   "Version": 1,
-  "Hash": "YeSq7YLlXYTHwl0pUKOErtOJHj7jvNITeNC2pNwA4m8=",
+  "Hash": "OUtNQZ0cJzfJEUFvW2Pju7GMHiOVsjNu37QIf8zZCqI=",
   "Source": "RoboStore",
   "BasePath": "_content/RoboStore",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "RoboStore/wwwroot",
+      "Source": "RoboStore",
+      "ContentRoot": "/Users/vladimir/Documents/Momento-mori/RoboStore/wwwroot/",
+      "BasePath": "_content/RoboStore",
+      "Pattern": "**"
+    }
+  ],
   "Assets": []
 }

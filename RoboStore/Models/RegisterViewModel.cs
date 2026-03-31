@@ -4,18 +4,14 @@ namespace RoboStore.Models;
 
 public class RegisterViewModel
 {
+    [Required(ErrorMessage = "Telegram ID обязателен")]
+    [Display(Name = "Telegram Chat ID")]
+    public string TelegramId { get; set; } = string.Empty;
+
     [Required(ErrorMessage = "Логин обязателен")]
     [StringLength(50, MinimumLength = 3, ErrorMessage = "Логин должен быть от 3 до 50 символов")]
     [Display(Name = "Логин")]
     public string Login { get; set; } = string.Empty;
-
-    [EmailAddress(ErrorMessage = "Некорректный email")]
-    [Display(Name = "Введите почту")]
-    public string? Email { get; set; }
-
-    [Phone(ErrorMessage = "Некорректный номер телефона")]
-    [Display(Name = "Введите номер телефона")]
-    public string? Phone { get; set; }
 
     [Required(ErrorMessage = "Пароль обязателен")]
     [StringLength(100, MinimumLength = 6, ErrorMessage = "Пароль должен быть от 6 символов")]

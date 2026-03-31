@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
 using RoboStore.Models;
+using RoboStore.Services;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -9,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<RoboStoreDbContext>();
+builder.Services.AddScoped<TelegramService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
