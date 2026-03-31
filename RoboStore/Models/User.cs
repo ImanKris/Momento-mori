@@ -3,6 +3,7 @@ namespace RoboStore.Models;
 public class User
 {
     public int Id { get; set; }
+    public string? Login { get; set; }
     public long TelegramId { get; set; }
     public string? TelegramUsername { get; set; }
     public string? FirstName { get; set; }

@@ -1,127 +1,163 @@
-@model RoboStore.Models.RegisterViewModel
-
 @{
-    ViewData["Title"] = "Регистрация";
+    ViewData["Title"] = "Регистрация в RoboStore";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">Регистрация</h2>
 
-<div class="alert alert-info">
-    <strong>Как зарегистрироваться:</strong>
-    <ol class="mb-0">
-        <li>Напишите боту <strong>@("@RoboStoreMoriBot")</strong> в Telegram</li>
-        <li>Введите ваш <strong>Chat ID</strong> (получите от бота) и данные</li>
-        <li>Нажмите "Получить код" и введите код из Telegram</li>
-    </ol>
-</div>
+                    <!-- Telegram Login -->
+                    <div class="text-center mb-4">
+                        <p class="text-muted mb-3">Быстрая регистрация через Telegram</p>
+                        <script async src="https://telegram.org/js/telegram-widget.js?21" data-telegram-login="RoboStoreMoriBot" data-size="large" data-radius="10" data-auth-url="/Account/TelegramCallback" data-request-access="write"></script>
+                    </div>
 
-<div id="step1">
-    <h4>Шаг 1: Данные</h4>
-    <div class="form-group mb-3">
-        <label class="form-label">Telegram Chat ID:</label>
-        <input type="text" id="telegramId" class="form-control" placeholder="Например: 123456789" />
-        <small class="text-muted">Напишите боту @("@RoboStoreMoriBot") чтобы получить Chat ID</small>
+                    <div class="text-center mb-4">
+                        <small class="text-muted">— или зарегистрируйтесь по логину —</small>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <div id="regForm">
+                        <h5 class="mb-3">Создание аккаунта</h5>
+                        <div class="mb-3">
+                            <label class="form-label">Telegram username:</label>
+                            <div class="input-group">
+                                <span class="input-group-text">&#64;</span>
+                                <input type="text" id="username" class="form-control" placeholder="your_username" />
+                            </div>
+                            <small class="text-muted">Напишите боту &#64;RoboStoreMoriBot в Telegram</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Логин:</label>
+                            <input type="text" id="login" class="form-control" placeholder="Придумайте логин" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Пароль:</label>
+                            <input type="password" id="password" class="form-control" placeholder="Минимум 4 символа" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Подтверждение пароля:</label>
+                            <input type="password" id="confirmPassword" class="form-control" placeholder="Повторите пароль" />
+                        </div>
+                        <button type="button" class="btn btn-primary w-100" onclick="sendCode()">Получить код</button>
+                        <div id="regResult" class="mt-3 text-center"></div>
+                    </div>
+
+                    <!-- Verification Form -->
+                    <div id="verifyForm" style="display:none;">
+                        <h5 class="mb-3">Подтверждение</h5>
+                        <p class="text-muted small mb-3">Код отправлен в Telegram боту <strong>&#64;RoboStoreMoriBot</strong></p>
+                        <div class="mb-3">
+                            <label class="form-label">Код из Telegram:</label>
+                            <input type="text" id="code" class="form-control text-center fs-4" maxlength="6" placeholder="- - - - - -" />
+                        </div>
+                        <button type="button" class="btn btn-success w-100" onclick="verifyCode()">Завершить регистрацию</button>
+                        <button type="button" class="btn btn-link w-100 mt-2" onclick="backToReg()">Назад</button>
+                        <div id="verifyResult" class="mt-3 text-center"></div>
+                    </div>
+
+                    <hr class="my-4">
+                    <p class="text-center text-muted small mb-0">
+                        Уже есть аккаунт? <a href="/Account/Login">Войти</a>
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group mb-3">
-        <label class="form-label">Логин:</label>
-        <input type="text" id="login" class="form-control" placeholder="Придумайте логин (минимум 3 символа)" />
-    </div>
-
-    <div class="form-group mb-3">
-        <label class="form-label">Пароль:</label>
-        <input type="password" id="password" class="form-control" placeholder="Минимум 6 символов" />
-    </div>
-
-    <div class="form-group mb-3">
-        <label class="form-label">Подтверждение пароля:</label>
-        <input type="password" id="confirmPassword" class="form-control" placeholder="Повторите пароль" />
-    </div>
-
-    <button type="button" class="btn btn-primary" onclick="sendCode()">Получить код</button>
-    <div id="sendCodeResult" class="mt-3"></div>
-</div>
-
-<div id="step2" style="display:none;">
-    <h4>Шаг 2: Подтверждение</h4>
-    <div class="form-group mb-3">
-        <label class="form-label">Код из Telegram:</label>
-        <input type="text" id="code" class="form-control" placeholder="Введите 6-значный код" maxlength="6" />
-    </div>
-    <button type="button" class="btn btn-success" onclick="confirmRegistration()">Завершить регистрацию</button>
-    <button type="button" class="btn btn-secondary" onclick="resetForm()">Назад</button>
-    <div id="confirmResult" class="mt-3"></div>
 </div>
 
 <script>
     async function sendCode() {
-        const telegramId = document.getElementById('telegramId').value.trim();
+        var usernameInput = document.getElementById('username').value.trim();
+        var atSymbol = String.fromCharCode(64);
+        const username = usernameInput.replace(atSymbol, '');
         const login = document.getElementById('login').value.trim();
         const password = document.getElementById('password').value;
         const confirmPassword = document.getElementById('confirmPassword').value;
 
-        if (!telegramId || !login || !password) {
-            document.getElementById('sendCodeResult').innerHTML = '<span class="text-danger">Заполните все поля</span>';
+        if (!username || !login || !password) {
+            document.getElementById('regResult').innerHTML = '<span class="text-danger">Заполните все поля</span>';
             return;
         }
 
         if (password !== confirmPassword) {
-            document.getElementById('sendCodeResult').innerHTML = '<span class="text-danger">Пароли не совпадают</span>';
+            document.getElementById('regResult').innerHTML = '<span class="text-danger">Пароли не совпадают</span>';
             return;
         }
 
-        if (password.length < 6) {
-            document.getElementById('sendCodeResult').innerHTML = '<span class="text-danger">Пароль должен быть не менее 6 символов</span>';
+        if (password.length < 4) {
+            document.getElementById('regResult').innerHTML = '<span class="text-danger">Пароль должен быть не менее 4 символов</span>';
             return;
         }
 
-        const response = await fetch('/Account/SendCode', {
+        if (login.length < 3) {
+            document.getElementById('regResult').innerHTML = '<span class="text-danger">Логин должен быть не менее 3 символов</span>';
+            return;
+        }
+
+        document.getElementById('regResult').innerHTML = '<span class="text-muted">Отправка кода...</span>';
+
+        const response = await fetch('/Account/RegisterSendCode', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ telegramId, login, password })
+            body: JSON.stringify({ username, login, password })
         });
 
         const result = await response.json();
-        const div = document.getElementById('sendCodeResult');
+        const div = document.getElementById('regResult');
 
         if (result.success) {
-            div.innerHTML = '<span class="text-success">✅ ' + result.message + '</span>';
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('step2').style.display = 'block';
+            div.innerHTML = '<span class="text-success"> ' + result.message + '</span>';
+            document.getElementById('regForm').style.display = 'none';
+            document.getElementById('verifyForm').style.display = 'block';
+            document.getElementById('code').focus();
         } else {
-            div.innerHTML = '<span class="text-danger">❌ ' + result.message + '</span>';
+            div.innerHTML = '<span class="text-danger"> ' + result.message + '</span>';
         }
     }
 
-    async function confirmRegistration() {
+    async function verifyCode() {
         const code = document.getElementById('code').value.trim();
+        const login = document.getElementById('login').value.trim();
 
-        if (!code) {
-            document.getElementById('confirmResult').innerHTML = '<span class="text-danger">Введите код</span>';
+        if (!code || code.length !== 6) {
+            document.getElementById('verifyResult').innerHTML = '<span class="text-danger">Введите 6-значный код</span>';
             return;
         }
 
-        const response = await fetch('/Account/ConfirmRegistration', {
+        document.getElementById('verifyResult').innerHTML = '<span class="text-muted">Проверка...</span>';
+
+        const response = await fetch('/Account/RegisterVerifyCode', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code })
+            body: JSON.stringify({ login, code })
         });
 
         const result = await response.json();
-        const div = document.getElementById('confirmResult');
+        const div = document.getElementById('verifyResult');
 
         if (result.success) {
-            div.innerHTML = '<span class="text-success">✅ ' + result.message + '</span>';
-            setTimeout(() => window.location.href = '/', 1500);
+            div.innerHTML = '<span class="text-success"> Регистрация завершена!</span>';
+            setTimeout(() => window.location.href = '/Account/Login', 1000);
         } else {
-            div.innerHTML = '<span class="text-danger">❌ ' + result.message + '</span>';
+            div.innerHTML = '<span class="text-danger"> ' + result.message + '</span>';
         }
     }
 
-    function resetForm() {
-        document.getElementById('step1').style.display = 'block';
-        document.getElementById('step2').style.display = 'none';
-        document.getElementById('sendCodeResult').innerHTML = '';
-        document.getElementById('confirmResult').innerHTML = '';
+    function backToReg() {
+        document.getElementById('regForm').style.display = 'block';
+        document.getElementById('verifyForm').style.display = 'none';
+        document.getElementById('regResult').innerHTML = '';
+        document.getElementById('verifyResult').innerHTML = '';
     }
 </script>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 16px;
+    }
+</style>

@@ -1,0 +1,15 @@
+C:\Projects\Momento-mori\RoboStoreBot\bin\Debug\net8.0\RoboStoreBot.exe
+C:\Projects\Momento-mori\RoboStoreBot\bin\Debug\net8.0\RoboStoreBot.deps.json
+C:\Projects\Momento-mori\RoboStoreBot\bin\Debug\net8.0\RoboStoreBot.runtimeconfig.json
+C:\Projects\Momento-mori\RoboStoreBot\bin\Debug\net8.0\RoboStoreBot.dll
+C:\Projects\Momento-mori\RoboStoreBot\bin\Debug\net8.0\RoboStoreBot.pdb
+C:\Projects\Momento-mori\RoboStoreBot\obj\Debug\net8.0\RoboStoreBot.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\Momento-mori\RoboStoreBot\obj\Debug\net8.0\RoboStoreBot.AssemblyInfoInputs.cache
+C:\Projects\Momento-mori\RoboStoreBot\obj\Debug\net8.0\RoboStoreBot.AssemblyInfo.cs
+C:\Projects\Momento-mori\RoboStoreBot\obj\Debug\net8.0\RoboStoreBot.csproj.CoreCompileInputs.cache
+C:\Projects\Momento-mori\RoboStoreBot\obj\Debug\net8.0\RoboStoreBot.sourcelink.json
+C:\Projects\Momento-mori\RoboStoreBot\obj\Debug\net8.0\RoboStoreBot.dll
+C:\Projects\Momento-mori\RoboStoreBot\obj\Debug\net8.0\refint\RoboStoreBot.dll
+C:\Projects\Momento-mori\RoboStoreBot\obj\Debug\net8.0\RoboStoreBot.pdb
+C:\Projects\Momento-mori\RoboStoreBot\obj\Debug\net8.0\RoboStoreBot.genruntimeconfig.cache
+C:\Projects\Momento-mori\RoboStoreBot\obj\Debug\net8.0\ref\RoboStoreBot.dll
