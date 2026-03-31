@@ -1,2 +1,39 @@
-<h1>Каталог роботов</h1>
+@model IEnumerable<RoboStore.Models.Robot>
 
+@{
+    ViewData["Title"] = "Каталог роботов";
+}
+
+<h2>Каталог роботов</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+<div class="row">
+    @foreach (var robot in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@robot.Model</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@robot.Type</h6>
+                    <p class="card-text">
+                        <strong>Цена:</strong> @robot.Price.ToString("C")<br/>
+                        <strong>В наличии:</strong> @(robot.Stock > 0 ? robot.Stock.ToString() : "Нет")
+                    </p>
+                    <a asp-action="Details" asp-route-id="@robot.Id" class="btn btn-info">Подробнее</a>
+                    @if (robot.Stock > 0)
+                    {
+                        <a asp-action="AddToCart" asp-route-id="@robot.Id" class="btn btn-primary">В корзину</a>
+                    }
+                    else
+                    {
+                        <button class="btn btn-secondary" disabled>Нет в наличии</button>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

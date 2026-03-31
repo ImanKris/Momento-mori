@@ -1,0 +1,55 @@
+@model IEnumerable<RoboStore.Models.Robot>
+
+@{
+    ViewData["Title"] = "Корзина";
+}
+
+<h2>Корзина</h2>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Модель</th>
+                <th>Тип</th>
+                <th>Цена</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var robot in Model)
+            {
+                <tr>
+                    <td>@robot.Model</td>
+                    <td>@robot.Type</td>
+                    <td>@robot.Price.ToString("C")</td>
+                    <td>
+                        <a asp-action="RemoveFromCart" asp-route-id="@robot.Id" class="btn btn-danger btn-sm">Удалить</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2"><strong>Итого:</strong></td>
+                <td><strong>@ViewBag.Total.ToString("C")</strong></td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="btn-group">
+        <a asp-action="Checkout" class="btn btn-success btn-lg">Оформить заказ</a>
+        <a asp-action="ClearCart" class="btn btn-outline-secondary">Очистить корзину</a>
+        <a asp-action="Index" class="btn btn-outline-primary">Продолжить покупки</a>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>Корзина пуста</h4>
+        <p>Добавьте роботов из каталога.</p>
+        <a asp-action="Index" class="btn btn-primary">В каталог</a>
+    </div>
+}

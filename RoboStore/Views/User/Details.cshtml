@@ -1,0 +1,35 @@
+@model RoboStore.Models.Robot
+
+@{
+    ViewData["Title"] = Model.Model;
+}
+
+<h2>@Model.Model</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">@Model.Model</h5>
+                <h6 class="card-subtitle mb-3 text-muted">@Model.Type</h6>
+                <p><strong>Цена:</strong> @Model.Price.ToString("C")</p>
+                <p><strong>В наличии:</strong> @(Model.Stock > 0 ? Model.Stock + " шт." : "Нет")</p>
+
+                @if (ViewBag.Message != null)
+                {
+                    <div class="alert alert-warning">@ViewBag.Message</div>
+                }
+
+                @if (Model.Stock > 0)
+                {
+                    <a asp-action="AddToCart" asp-route-id="@Model.Id" class="btn btn-primary btn-lg">Добавить в корзину</a>
+                }
+                else
+                {
+                    <button class="btn btn-secondary btn-lg" disabled>Нет в наличии</button>
+                }
+                <a asp-action="Index" class="btn btn-secondary mt-2">Назад к каталогу</a>
+            </div>
+        </div>
+    </div>
+</div>

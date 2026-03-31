@@ -6,6 +6,8 @@ namespace RoboStore.Data;
 public class RoboStoreDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<Robot> Robots { get; set; }
+    public DbSet<Order> Orders { get; set; }
 
     private readonly string _connectionString;
 

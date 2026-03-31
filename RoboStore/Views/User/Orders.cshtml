@@ -1,0 +1,64 @@
+@model IEnumerable<RoboStore.Models.Order>
+
+@{
+    ViewData["Title"] = "Мои заказы";
+}
+
+<h2>Мои заказы</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+@if (Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Робот</th>
+                <th>Тип</th>
+                <th>Цена</th>
+                <th>Дата</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.Robot?.Model</td>
+                    <td>@order.Robot?.Type</td>
+                    <td>@order.Robot?.Price.ToString("C")</td>
+                    <td>@order.OrderDate.ToString("g")</td>
+                    <td>
+                        <span class="badge bg-@GetStatusBadgeClass(order.Status)">@order.Status</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>У вас пока нет заказов</h4>
+        <a asp-action="Index" class="btn btn-primary">В каталог</a>
+    </div>
+}
+
+@{
+    string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "В обработке" => "warning",
+            "Отправлен" => "info",
+            "Доставлен" => "success",
+            "Отменён" => "danger",
+            _ => "secondary"
+        };
+    }
+}

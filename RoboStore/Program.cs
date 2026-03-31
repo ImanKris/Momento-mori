@@ -90,6 +90,50 @@ try
             VALUES ('manager', '{managerHash}', 'Manager', 1, GETDATE())
         END", conn);
     seedCmd.ExecuteNonQuery();
+
+    // Создаём таблицу Robots если её нет
+    var createRobotsCmd = new SqlCommand(@"
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Robots')
+        BEGIN
+            CREATE TABLE Robots (
+                Id INT IDENTITY(1,1) PRIMARY KEY,
+                Model NVARCHAR(MAX) NOT NULL,
+                Type NVARCHAR(MAX) NOT NULL,
+                Price DECIMAL(18,2) NOT NULL DEFAULT 0,
+                Stock INT NOT NULL DEFAULT 0
+            )
+        END", conn);
+    createRobotsCmd.ExecuteNonQuery();
+
+    // Создаём таблицу Orders если её нет
+    var createOrdersCmd = new SqlCommand(@"
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Orders')
+        BEGIN
+            CREATE TABLE Orders (
+                Id INT IDENTITY(1,1) PRIMARY KEY,
+                UserId INT NOT NULL,
+                RobotId INT NOT NULL,
+                OrderDate DATETIME NOT NULL DEFAULT GETDATE(),
+                Status NVARCHAR(MAX) NOT NULL DEFAULT 'В обработке',
+                FOREIGN KEY (UserId) REFERENCES Users(Id),
+                FOREIGN KEY (RobotId) REFERENCES Robots(Id)
+            )
+        END", conn);
+    createOrdersCmd.ExecuteNonQuery();
+
+    // Добавляем тестовых роботов если таблица пуста
+    var seedRobotsCmd = new SqlCommand(@"
+        IF NOT EXISTS (SELECT * FROM Robots)
+        BEGIN
+            INSERT INTO Robots (Model, Type, Price, Stock) VALUES
+            ('R2-D2', 'Дроид-помощник', 15000, 5),
+            ('C-3PO', 'Дроид-переводчик', 12000, 3),
+            ('BB-8', 'Разведывательный', 18000, 4),
+            ('Optimus Prime', 'Трансформер', 50000, 2),
+            ('Wall-E', 'Утилизатор', 8000, 10),
+            ('RoboCop', 'Полицейский', 35000, 1)
+        END", conn);
+    seedRobotsCmd.ExecuteNonQuery();
 }
 catch (Exception ex)
 {

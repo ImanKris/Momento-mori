@@ -79,6 +79,12 @@
         const div = document.getElementById('loginResult');
 
         if (result.success) {
+            if (result.noCodeRequired) {
+                div.innerHTML = '<span class="text-success">✅ Вход...</span>';
+                setTimeout(() => window.location.href = result.redirectUrl || '/', 300);
+                return;
+            }
+
             let message = '✅ ' + result.message;
             if (result.debugMode) {
                 message += '<br><div class="alert alert-warning mt-2 p-2"><strong>Внимание:</strong> Telegram недоступен. Используйте код: <strong>' + result.message.split(': ')[1] + '</strong></div>';
