@@ -13,7 +13,6 @@ public class UserController : Controller
 {
     private readonly RoboStoreDbContext _context;
     private const string CartSessionKey = "Cart";
-    private const string UserLoginSessionKey = "UserLogin";
 
     public UserController(RoboStoreDbContext context)
     {
@@ -21,19 +20,48 @@ public class UserController : Controller
     }
 
     /// <summary>
-    /// Главная страница магазина — список всех роботов
+    /// Главная страница магазина — список всех роботов с фильтрацией
     /// </summary>
-    public IActionResult Index()
+    public IActionResult Index(string? search, int? typeId, string? inStock)
     {
-        // Проверка авторизации
-        var userLogin = HttpContext.Session.GetString(UserLoginSessionKey);
-        if (string.IsNullOrEmpty(userLogin))
+        // Проверка авторизации через User.Identity (cookie-based)
+        if (User?.Identity?.IsAuthenticated != true)
         {
             return RedirectToAction("Login", "Account");
         }
 
-        var robots = _context.Robots.ToList();
-        return View(robots);
+        var robots = _context.Robots.Include(r => r.RobotType).AsQueryable();
+
+        // Фильтр по названию (поиск по подстроке)
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            robots = robots.Where(r => r.Model.Contains(search) || (r.Description != null && r.Description.Contains(search)));
+            ViewBag.Search = search;
+        }
+
+        // Фильтр по типу робота
+        if (typeId.HasValue && typeId.Value > 0)
+        {
+            robots = robots.Where(r => r.TypeId == typeId.Value);
+            ViewBag.SelectedTypeId = typeId.Value;
+        }
+
+        // Фильтр по наличию
+        if (inStock == "yes")
+        {
+            robots = robots.Where(r => r.Stock > 0);
+            ViewBag.InStock = "yes";
+        }
+        else if (inStock == "no")
+        {
+            robots = robots.Where(r => r.Stock <= 0);
+            ViewBag.InStock = "no";
+        }
+
+        var robotList = robots.ToList();
+        ViewBag.RobotTypes = _context.RobotTypes.OrderBy(t => t.Name).ToList();
+
+        return View(robotList);
     }
 
     /// <summary>
@@ -63,8 +91,7 @@ public class UserController : Controller
     public IActionResult AddToCart(int id)
     {
         // Проверка авторизации
-        var userLogin = HttpContext.Session.GetString(UserLoginSessionKey);
-        if (string.IsNullOrEmpty(userLogin))
+        if (User?.Identity?.IsAuthenticated != true)
         {
             return RedirectToAction("Login", "Account");
         }
@@ -96,8 +123,7 @@ public class UserController : Controller
     /// </summary>
     public IActionResult RemoveFromCart(int id)
     {
-        var userLogin = HttpContext.Session.GetString(UserLoginSessionKey);
-        if (string.IsNullOrEmpty(userLogin))
+        if (User?.Identity?.IsAuthenticated != true)
         {
             return RedirectToAction("Login", "Account");
         }
@@ -124,8 +150,7 @@ public class UserController : Controller
     public IActionResult Cart()
     {
         // Проверка авторизации
-        var userLogin = HttpContext.Session.GetString(UserLoginSessionKey);
-        if (string.IsNullOrEmpty(userLogin))
+        if (User?.Identity?.IsAuthenticated != true)
         {
             return RedirectToAction("Login", "Account");
         }
@@ -148,8 +173,7 @@ public class UserController : Controller
     public IActionResult Checkout()
     {
         // Проверка авторизации
-        var userLogin = HttpContext.Session.GetString(UserLoginSessionKey);
-        if (string.IsNullOrEmpty(userLogin))
+        if (User?.Identity?.IsAuthenticated != true)
         {
             return RedirectToAction("Login", "Account");
         }
@@ -164,7 +188,13 @@ public class UserController : Controller
             return RedirectToAction("Index");
         }
 
-        // Получаем UserId текущего пользователя по логину
+        // Получаем UserId текущего пользователя
+        var userLogin = User.Identity?.Name;
+        if (string.IsNullOrEmpty(userLogin))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
         var user = _context.Users.FirstOrDefault(u => u.Login == userLogin);
         if (user == null)
         {
@@ -212,13 +242,18 @@ public class UserController : Controller
     public IActionResult Orders()
     {
         // Проверка авторизации
-        var userLogin = HttpContext.Session.GetString(UserLoginSessionKey);
-        if (string.IsNullOrEmpty(userLogin))
+        if (User?.Identity?.IsAuthenticated != true)
         {
             return RedirectToAction("Login", "Account");
         }
 
         // Получаем пользователя
+        var userLogin = User.Identity?.Name;
+        if (string.IsNullOrEmpty(userLogin))
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
         var user = _context.Users.FirstOrDefault(u => u.Login == userLogin);
         if (user == null)
         {

@@ -66,6 +66,7 @@
 
         const response = await fetch('/Account/Register', {
             method: 'POST',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ login, password })
         });

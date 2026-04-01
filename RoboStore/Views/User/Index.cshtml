@@ -14,6 +14,48 @@
     </div>
 }
 
+<!-- Фильтр -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" asp-action="Index" id="filterForm">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="search" class="form-label">Поиск по названию</label>
+                    <input type="text" class="form-control" id="search" name="search"
+                           value="@ViewBag.Search" placeholder="Введите название робота..." />
+                </div>
+                <div class="col-md-3">
+                    <label for="typeId" class="form-label">Тип робота</label>
+                    <select class="form-select" id="typeId" name="typeId">
+                        <option value="">-- Все типы --</option>
+                        @if (ViewBag.RobotTypes != null)
+                        {
+                            foreach (var type in ViewBag.RobotTypes)
+                            {
+                                <option value="@type.Id" selected="@(ViewBag.SelectedTypeId == type.Id ? "selected" : null)">@type.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="inStock" class="form-label">Наличие</label>
+                    <select class="form-select" id="inStock" name="inStock">
+                        <option value="">-- Любое --</option>
+                        <option value="yes" selected="@(ViewBag.InStock == "yes" ? "selected" : null)">В наличии</option>
+                        <option value="no" selected="@(ViewBag.InStock == "no" ? "selected" : null)">Нет в наличии</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="d-grid gap-2 w-100">
+                        <button type="submit" class="btn btn-primary">Фильтровать</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Сбросить</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 @if (Model != null && Model.Any())
 {
     <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -27,6 +69,10 @@
                     <div class="card-body">
                         <h5 class="card-title">@robot.Model</h5>
                         <h6 class="card-subtitle mb-2 text-muted">@robot.Type</h6>
+                        @if (!string.IsNullOrEmpty(robot.Description))
+                        {
+                            <p class="card-text small text-muted">@(robot.Description.Length > 80 ? robot.Description.Substring(0, 80) + "..." : robot.Description)</p>
+                        }
                         <p class="card-text">
                             <strong>Цена:</strong> @robot.Price.ToString("N0") руб.<br />
                             <strong>На складе:</strong> @(robot.Stock > 0 ? $"{robot.Stock} шт." : "Нет в наличии")
@@ -54,5 +100,6 @@ else
 {
     <div class="alert alert-info">
         <h4>Роботы не найдены</h4>
+        <p>Попробуйте изменить параметры фильтрации.</p>
     </div>
 }

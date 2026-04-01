@@ -48,16 +48,43 @@ public class AdminController : Controller
     [HttpGet]
     public IActionResult CreateRobot()
     {
+        ViewBag.RobotTypes = _context.RobotTypes.OrderBy(t => t.Name).ToList();
         return View();
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateRobot(Robot robot)
     {
-        if (string.IsNullOrWhiteSpace(robot.Model) || string.IsNullOrWhiteSpace(robot.Type))
+        // Получаем список типов для повторного отображения формы при ошибке
+        ViewBag.RobotTypes = _context.RobotTypes.OrderBy(t => t.Name).ToList();
+
+        // Валидация
+        if (string.IsNullOrWhiteSpace(robot.Model))
         {
-            ModelState.AddModelError("", "Заполните все обязательные поля");
+            ModelState.AddModelError("", "Укажите модель робота");
             return View(robot);
+        }
+
+        if (robot.TypeId <= 0)
+        {
+            ModelState.AddModelError("", "Выберите тип робота");
+            return View(robot);
+        }
+
+        // Получаем название типа из RobotTypes
+        var robotType = await _context.RobotTypes.FindAsync(robot.TypeId);
+        if (robotType == null)
+        {
+            ModelState.AddModelError("", "Выбран неверный тип робота");
+            return View(robot);
+        }
+
+        robot.Type = robotType.Name;
+
+        // Автогенерация описания если пустое
+        if (string.IsNullOrWhiteSpace(robot.Description))
+        {
+            robot.Description = GenerateRobotDescription(robot, robotType);
         }
 
         _context.Robots.Add(robot);
@@ -86,15 +113,24 @@ public class AdminController : Controller
         {
             return NotFound();
         }
+        ViewBag.RobotTypes = _context.RobotTypes.OrderBy(t => t.Name).ToList();
         return View(robot);
     }
 
     [HttpPost]
     public async Task<IActionResult> EditRobot(Robot robot)
     {
-        if (string.IsNullOrWhiteSpace(robot.Model) || string.IsNullOrWhiteSpace(robot.Type))
+        ViewBag.RobotTypes = _context.RobotTypes.OrderBy(t => t.Name).ToList();
+
+        if (string.IsNullOrWhiteSpace(robot.Model))
         {
-            ModelState.AddModelError("", "Заполните все обязательные поля");
+            ModelState.AddModelError("", "Укажите модель робота");
+            return View(robot);
+        }
+
+        if (robot.TypeId <= 0)
+        {
+            ModelState.AddModelError("", "Выберите тип робота");
             return View(robot);
         }
 
@@ -104,11 +140,29 @@ public class AdminController : Controller
             return NotFound();
         }
 
+        // Получаем название типа
+        var robotType = await _context.RobotTypes.FindAsync(robot.TypeId);
+        if (robotType != null)
+        {
+            existingRobot.Type = robotType.Name;
+            existingRobot.TypeId = robot.TypeId;
+        }
+
         var oldModel = existingRobot.Model;
         existingRobot.Model = robot.Model;
-        existingRobot.Type = robot.Type;
         existingRobot.Price = robot.Price;
         existingRobot.Stock = robot.Stock;
+        existingRobot.SerialNumber = robot.SerialNumber;
+
+        // Автогенерация описания если пустое
+        if (string.IsNullOrWhiteSpace(robot.Description))
+        {
+            existingRobot.Description = GenerateRobotDescription(existingRobot, robotType ?? new RobotType { Name = existingRobot.Type });
+        }
+        else
+        {
+            existingRobot.Description = robot.Description;
+        }
 
         await _context.SaveChangesAsync();
 
@@ -136,20 +190,35 @@ public class AdminController : Controller
             return NotFound();
         }
 
-        // Логирование
-        var log = new Log
+        try
         {
-            ActionDate = DateTime.Now,
-            UserLogin = User.Identity?.Name ?? "Unknown",
-            ActionType = "ROBOT_DELETED",
-            Details = $"Удалён робот: {robot.Model}"
-        };
-        _context.Logs.Add(log);
+            // Удаляем связанные заказы (если есть)
+            var relatedOrders = _context.Orders.Where(o => o.RobotId == id).ToList();
+            if (relatedOrders.Any())
+            {
+                _context.Orders.RemoveRange(relatedOrders);
+            }
 
-        _context.Robots.Remove(robot);
-        await _context.SaveChangesAsync();
+            // Логирование
+            var log = new Log
+            {
+                ActionDate = DateTime.Now,
+                UserLogin = User.Identity?.Name ?? "Unknown",
+                ActionType = "ROBOT_DELETED",
+                Details = $"Удалён робот: {robot.Model}"
+            };
+            _context.Logs.Add(log);
 
-        TempData["Message"] = "Робот удалён";
+            _context.Robots.Remove(robot);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Робот удалён";
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = $"Ошибка при удалении робота: {ex.Message}";
+        }
+
         return RedirectToAction("Robots");
     }
 
@@ -203,5 +272,27 @@ public class AdminController : Controller
             .ToList();
 
         return View(logs);
+    }
+
+    /// <summary>
+    /// Автогенерация описания робота на основе его характеристик
+    /// </summary>
+    private string GenerateRobotDescription(Robot robot, RobotType robotType)
+    {
+        var description = $"Робот {robot.Model} относится к типу «{robotType.Name}».";
+
+        if (!string.IsNullOrWhiteSpace(robotType.Description))
+        {
+            description += $" {robotType.Description}.";
+        }
+
+        if (!string.IsNullOrWhiteSpace(robot.SerialNumber))
+        {
+            description += $" Серийный номер: {robot.SerialNumber}.";
+        }
+
+        description += $" Цена: {robot.Price:N0} руб.{(robot.Stock > 0 ? $" В наличии: {robot.Stock} шт." : " Нет в наличии.")}";
+
+        return description;
     }
 }

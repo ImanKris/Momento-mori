@@ -67,6 +67,7 @@ public class ManagerController : Controller
     }
 
     [HttpPost]
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> UpdateStatus(int orderId, string status)
     {
         var order = await _context.Orders.FindAsync(orderId);

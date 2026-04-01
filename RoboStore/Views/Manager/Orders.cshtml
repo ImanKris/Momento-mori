@@ -63,8 +63,10 @@
             try {
                 const response = await fetch('@Url.Action("UpdateStatus", "Manager")', {
                     method: 'POST',
+                    credentials: 'include',
                     headers: {
                         'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
                     },
                     body: JSON.stringify({ orderId: orderId, status: newStatus })
                 });

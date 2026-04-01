@@ -100,11 +100,12 @@ public class AccountController : Controller
         return Json(new { success = true, message = "Регистрация успешна!" });
     }
 
-    [HttpPost]
+    [HttpGet]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return RedirectToAction("Login");
+        HttpContext.Session.Clear();
+        return RedirectToAction("Login", "Account");
     }
 
     private async Task<IActionResult> SignInUser(User user, string redirectUrl)

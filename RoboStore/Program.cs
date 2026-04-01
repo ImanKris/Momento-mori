@@ -117,17 +117,68 @@ try
         END", conn);
     createLogsCmd.ExecuteNonQuery();
 
+    // Создаём таблицу RobotTypes если её нет
+    var createRobotTypesCmd = new SqlCommand(@"
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'RobotTypes')
+        BEGIN
+            CREATE TABLE RobotTypes (
+                Id INT IDENTITY(1,1) PRIMARY KEY,
+                Name NVARCHAR(MAX) NOT NULL,
+                Description NVARCHAR(MAX) NULL
+            )
+        END", conn);
+    createRobotTypesCmd.ExecuteNonQuery();
+
+    // Добавляем базовые типы роботов если таблица пуста
+    var seedRobotTypesCmd = new SqlCommand(@"
+        IF NOT EXISTS (SELECT * FROM RobotTypes)
+        BEGIN
+            INSERT INTO RobotTypes (Name, Description) SELECT 'Промышленный', 'Роботы для промышленного производства и автоматизации' WHERE NOT EXISTS (SELECT 1 FROM RobotTypes WHERE Name = 'Промышленный')
+            INSERT INTO RobotTypes (Name, Description) SELECT 'Бытовой', 'Роботы для домашнего использования' WHERE NOT EXISTS (SELECT 1 FROM RobotTypes WHERE Name = 'Бытовой')
+            INSERT INTO RobotTypes (Name, Description) SELECT 'Образовательный', 'Роботы для обучения и развития' WHERE NOT EXISTS (SELECT 1 FROM RobotTypes WHERE Name = 'Образовательный')
+            INSERT INTO RobotTypes (Name, Description) SELECT 'Медицинский', 'Роботы для медицинских учреждений' WHERE NOT EXISTS (SELECT 1 FROM RobotTypes WHERE Name = 'Медицинский')
+            INSERT INTO RobotTypes (Name, Description) SELECT 'Дроид-помощник', 'Универсальные дроиды-ассистенты' WHERE NOT EXISTS (SELECT 1 FROM RobotTypes WHERE Name = 'Дроид-помощник')
+            INSERT INTO RobotTypes (Name, Description) SELECT 'Дроид-переводчик', 'Роботы для перевода и коммуникации' WHERE NOT EXISTS (SELECT 1 FROM RobotTypes WHERE Name = 'Дроид-переводчик')
+            INSERT INTO RobotTypes (Name, Description) SELECT 'Разведывательный', 'Роботы для разведки и наблюдения' WHERE NOT EXISTS (SELECT 1 FROM RobotTypes WHERE Name = 'Разведывательный')
+            INSERT INTO RobotTypes (Name, Description) SELECT 'Трансформер', 'Трансформирующиеся роботы' WHERE NOT EXISTS (SELECT 1 FROM RobotTypes WHERE Name = 'Трансформер')
+            INSERT INTO RobotTypes (Name, Description) SELECT 'Утилизатор', 'Роботы для утилизации и переработки' WHERE NOT EXISTS (SELECT 1 FROM RobotTypes WHERE Name = 'Утилизатор')
+            INSERT INTO RobotTypes (Name, Description) SELECT 'Полицейский', 'Роботы для правоохранительных органов' WHERE NOT EXISTS (SELECT 1 FROM RobotTypes WHERE Name = 'Полицейский')
+        END", conn);
+    seedRobotTypesCmd.ExecuteNonQuery();
+
+    // Добавляем колонки Description и SerialNumber если их нет
+    var addRobotColumnsCmd = new SqlCommand(@"
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Robots' AND COLUMN_NAME = 'Description')
+        BEGIN
+            ALTER TABLE Robots ADD Description NVARCHAR(MAX) NULL
+        END
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Robots' AND COLUMN_NAME = 'SerialNumber')
+        BEGIN
+            ALTER TABLE Robots ADD SerialNumber NVARCHAR(MAX) NULL
+        END
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Robots' AND COLUMN_NAME = 'TypeId')
+        BEGIN
+            ALTER TABLE Robots ADD TypeId INT NULL
+        END", conn);
+    addRobotColumnsCmd.ExecuteNonQuery();
+
+    // Обновляем существующих роботов - связываем Type (текст) с TypeId через RobotTypes
+    var linkRobotTypesCmd = new SqlCommand(@"
+        UPDATE Robots SET TypeId = (SELECT TOP 1 Id FROM RobotTypes WHERE Name = Robots.Type)
+        WHERE TypeId IS NULL AND Type IS NOT NULL", conn);
+    linkRobotTypesCmd.ExecuteNonQuery();
+
     // Добавляем тестовых роботов если таблица пуста
     var seedRobotsCmd = new SqlCommand(@"
         IF NOT EXISTS (SELECT * FROM Robots)
         BEGIN
-            INSERT INTO Robots (Model, Type, Price, Stock) VALUES
-            ('R2-D2', 'Дроид-помощник', 15000, 5),
-            ('C-3PO', 'Дроид-переводчик', 12000, 3),
-            ('BB-8', 'Разведывательный', 18000, 4),
-            ('Optimus Prime', 'Трансформер', 50000, 2),
-            ('Wall-E', 'Утилизатор', 8000, 10),
-            ('RoboCop', 'Полицейский', 35000, 1)
+            INSERT INTO Robots (Model, Type, TypeId, Price, Stock, Description) VALUES
+            ('R2-D2', 'Дроид-помощник', (SELECT TOP 1 Id FROM RobotTypes WHERE Name = 'Дроид-помощник'), 15000, 5, 'Компактный дроид-помощник с развитой функциональностью'),
+            ('C-3PO', 'Дроид-переводчик', (SELECT TOP 1 Id FROM RobotTypes WHERE Name = 'Дроид-переводчик'), 12000, 3, 'Гуманоидный дроид для перевода и межвидовой коммуникации'),
+            ('BB-8', 'Разведывательный', (SELECT TOP 1 Id FROM RobotTypes WHERE Name = 'Разведывательный'), 18000, 4, 'Сферический разведывательный дроид'),
+            ('Optimus Prime', 'Трансформер', (SELECT TOP 1 Id FROM RobotTypes WHERE Name = 'Трансформер'), 50000, 2, 'Лидер автоботов, способный трансформироваться в грузовик'),
+            ('Wall-E', 'Утилизатор', (SELECT TOP 1 Id FROM RobotTypes WHERE Name = 'Утилизатор'), 8000, 10, 'Робот-утилизатор для сбора и прессования мусора'),
+            ('RoboCop', 'Полицейский', (SELECT TOP 1 Id FROM RobotTypes WHERE Name = 'Полицейский'), 35000, 1, 'Кибернетический полицейский для поддержания правопорядка')
         END", conn);
     seedRobotsCmd.ExecuteNonQuery();
 }
@@ -137,10 +188,10 @@ catch (Exception ex)
 }
 
 app.UseSession();
-app.UseAuthentication();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");

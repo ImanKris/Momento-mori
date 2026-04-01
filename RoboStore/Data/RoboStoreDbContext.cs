@@ -9,6 +9,7 @@ public class RoboStoreDbContext : DbContext
     public DbSet<Robot> Robots { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<Log> Logs { get; set; }
+    public DbSet<RobotType> RobotTypes { get; set; }
 
     private readonly string _connectionString;
 
