@@ -1,2 +1,58 @@
-<h1>Каталог роботов</h1>
+@model List<RoboStore.Models.Robot>
 
+@{
+    ViewData["Title"] = "Каталог роботов";
+}
+
+<h2 class="mb-4">Каталог роботов</h2>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (Model != null && Model.Any())
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var robot in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-light d-flex align-items-center justify-content-center" style="height: 120px;">
+                        <span class="display-4 text-primary">@robot.Model.FirstOrDefault()</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@robot.Model</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@robot.Type</h6>
+                        <p class="card-text">
+                            <strong>Цена:</strong> @robot.Price.ToString("N0") руб.<br />
+                            <strong>На складе:</strong> @(robot.Stock > 0 ? $"{robot.Stock} шт." : "Нет в наличии")
+                        </p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0">
+                        <div class="d-grid gap-2 d-md-flex">
+                            <a asp-action="Details" asp-route-id="@robot.Id" class="btn btn-primary flex-md-grow-1">Подробнее</a>
+                            @if (robot.Stock > 0)
+                            {
+                                <a asp-action="AddToCart" asp-route-id="@robot.Id" class="btn btn-success">В корзину</a>
+                            }
+                            else
+                            {
+                                <button class="btn btn-secondary" disabled>Нет в наличии</button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>Роботы не найдены</h4>
+    </div>
+}

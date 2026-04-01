@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj": {}
+    "D:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj": {}
   },
   "projects": {
-    "C:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj": {
+    "D:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj",
+        "projectUniqueName": "D:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj",
         "projectName": "RoboStoreBot",
-        "projectPath": "C:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj",
-        "packagesPath": "C:\\Users\\123\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\Momento-mori\\RoboStoreBot\\obj\\",
+        "projectPath": "D:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj",
+        "packagesPath": "C:\\Users\\иван\\.nuget\\packages\\",
+        "outputPath": "D:\\Projects\\Momento-mori\\RoboStoreBot\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\123\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\иван\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"

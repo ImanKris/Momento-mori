@@ -1,0 +1,70 @@
+@model List<RoboStore.Models.Robot>
+
+@{
+    ViewData["Title"] = "Управление роботами";
+}
+
+<h1 class="mb-4">Управление роботами</h1>
+
+<p>
+    <a asp-action="CreateRobot" class="btn btn-success">Добавить робота</a>
+</p>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Модель</th>
+                <th>Тип</th>
+                <th>Цена</th>
+                <th>На складе</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var robot in Model)
+            {
+                <tr>
+                    <td>@robot.Id</td>
+                    <td>@robot.Model</td>
+                    <td>@robot.Type</td>
+                    <td>@robot.Price.ToString("N0") руб.</td>
+                    <td>
+                        @if (robot.Stock > 0)
+                        {
+                            <span class="badge bg-success">@robot.Stock шт.</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Нет в наличии</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="EditRobot" asp-route-id="@robot.Id" class="btn btn-sm btn-warning">Edit</a>
+                        <form asp-action="DeleteRobot" asp-route-id="@robot.Id" method="post" class="d-inline"
+                              onsubmit="return confirm('Удалить робота @robot.Model?')">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center py-5">
+        <h4 class="mb-3">Роботов пока нет</h4>
+        <a asp-action="CreateRobot" class="btn btn-success">Добавить первого робота</a>
+    </div>
+}

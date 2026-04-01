@@ -9,18 +9,10 @@
         <div class="col-md-3">
             <div class="card">
                 <div class="card-body text-center">
-                    @if (!string.IsNullOrEmpty(Model.PhotoUrl))
-                    {
-                        <img src="@Model.PhotoUrl" alt="@Model.TelegramUsername" class="rounded-circle mb-3" width="100" height="100" />
-                    }
-                    else
-                    {
-                        <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:100px;height:100px;">
-                            <span class="text-white fs-2">@Model.FirstName?[0]</span>
-                        </div>
-                    }
-                    <h5>@Model.FirstName @Model.LastName</h5>
-                    @@@Model.TelegramUsername
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width:100px;height:100px;">
+                        <span class="text-white fs-2">@Model.Login?[0]</span>
+                    </div>
+                    <h5>@Model.Login</h5>
                 </div>
             </div>
         </div>
@@ -37,33 +29,12 @@
                             <td>@Model.Id</td>
                         </tr>
                         <tr>
-                            <th>Telegram ID:</th>
-                            <td>@Model.TelegramId</td>
-                        </tr>
-                        <tr>
-                            <th>Username:</th>
-                            <td>@@@Model.TelegramUsername</td>
-                        </tr>
-                        <tr>
-                            <th>Имя:</th>
-                            <td>@Model.FirstName @Model.LastName</td>
+                            <th>Логин:</th>
+                            <td>@Model.Login</td>
                         </tr>
                         <tr>
                             <th>Роль:</th>
                             <td><span class="badge bg-primary">@Model.Role</span></td>
-                        </tr>
-                        <tr>
-                            <th>Статус:</th>
-                            <td>
-                                @if (Model.IsVerified)
-                                {
-                                    <span class="badge bg-success">Верифицирован</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-warning">Не верифицирован</span>
-                                }
-                            </td>
                         </tr>
                         <tr>
                             <th>Дата регистрации:</th>

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet run:*)",
+      "Bash(where.exe dotnet:*)",
+      "Read(//c/Program Files/dotnet/**)",
+      "Read(//c/Program Files \\(x86\\)/dotnet/**)",
+      "WebSearch",
+      "Bash(dotnet build:*)",
+      "Bash(taskkill //F //IM dotnet.exe)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5000/Account/Login)",
+      "Bash(curl -s http://localhost:5000/Account/Login)",
+      "Bash(curl -sL http://localhost:5000/Account/Login)",
+      "Bash(curl -v http://localhost:5000/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5123/Account/Login)",
+      "Bash(curl -s http://localhost:5123/Account/Login)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5000/)",
+      "Bash(pkill -f \"dotnet.*RoboStore\")",
+      "Bash(lsof -ti:5000)",
+      "Bash(xargs kill:*)"
+    ]
+  }
+}

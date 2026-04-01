@@ -1,1 +1,70 @@
-<h1>Панель администратора</h1>
+@{
+    ViewData["Title"] = "Админка";
+}
+
+<h1 class="mb-4">Панель администратора</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Роботов</h5>
+                <p class="card-text display-4">@ViewBag.RobotsCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Пользователей</h5>
+                <p class="card-text display-4">@ViewBag.UsersCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Заказов</h5>
+                <p class="card-text display-4">@ViewBag.OrdersCount</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">В обработке</h5>
+                <p class="card-text display-4">@ViewBag.PendingOrders</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Выполнено сегодня</h5>
+                <p class="card-text display-4">@ViewBag.CompletedToday</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card bg-light mb-3">
+    <div class="card-body text-center">
+        <h3>Общая сумма выполненных заказов</h3>
+        <p class="display-4 text-success fw-bold">@ViewBag.TotalSales.ToString("N0") руб.</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <a asp-action="Robots" class="btn btn-primary w-100 mb-2">Управление роботами</a>
+    </div>
+    <div class="col-md-4">
+        <a asp-action="Users" class="btn btn-success w-100 mb-2">Управление пользователями</a>
+    </div>
+    <div class="col-md-4">
+        <a asp-action="Logs" class="btn btn-secondary w-100 mb-2">Системные логи</a>
+    </div>
+</div>
