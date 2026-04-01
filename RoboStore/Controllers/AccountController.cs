@@ -121,6 +121,9 @@ public class AccountController : Controller
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
 
+        // Синхронизируем сессию для совместимости с UserController
+        HttpContext.Session.SetString("UserLogin", user.Login ?? "User");
+
         return Json(new { success = true, message = "Вход выполнен", redirectUrl });
     }
 

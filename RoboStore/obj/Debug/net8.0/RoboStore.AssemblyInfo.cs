@@ -13,11 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RoboStore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-<<<<<<< HEAD
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2e63787e25986627f8f5bd687e5fd799d169674a")]
-=======
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1d1102c0f5e65045ece84c7087599b730b0a705a")]
->>>>>>> 67512e9e51ff3a7dcb8ac5f87294f2f906bb3150
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2b5f2ddd3956424db87e2574c74f0e8eba127229")]
 [assembly: System.Reflection.AssemblyProductAttribute("RoboStore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RoboStore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
