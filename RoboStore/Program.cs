@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
-using RoboStore.Models;
-using RoboStore.Services;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -11,8 +9,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<RoboStoreDbContext>();
-builder.Services.AddScoped<TelegramAuthService>();
-builder.Services.AddScoped<TelegramService>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -24,9 +20,17 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
 });
 
-// Вычисляем хеши заранее
+// Простые хеши для паролей
 string adminHash = ComputeHash("AdminMori");
 string managerHash = ComputeHash("ManagerMori");
+
+static string ComputeHash(string input)
+{
+    using var sha = SHA256.Create();
+    var bytes = Encoding.UTF8.GetBytes(input);
+    var hash = sha.ComputeHash(bytes);
+    return Convert.ToBase64String(hash);
+}
 
 var app = builder.Build();
 
@@ -41,14 +45,6 @@ try
         BEGIN
             ALTER TABLE Users ADD Login NVARCHAR(MAX) NULL
         END
-        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'TelegramId')
-        BEGIN
-            ALTER TABLE Users ADD TelegramId BIGINT NULL
-        END
-        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'TelegramUsername')
-        BEGIN
-            ALTER TABLE Users ADD TelegramUsername NVARCHAR(MAX) NULL
-        END
         IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'FirstName')
         BEGIN
             ALTER TABLE Users ADD FirstName NVARCHAR(MAX) NULL
@@ -56,39 +52,25 @@ try
         IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'LastName')
         BEGIN
             ALTER TABLE Users ADD LastName NVARCHAR(MAX) NULL
-        END
-        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Users' AND COLUMN_NAME = 'PhotoUrl')
-        BEGIN
-            ALTER TABLE Users ADD PhotoUrl NVARCHAR(MAX) NULL
         END", conn);
     alterCmd.ExecuteNonQuery();
 
     var fixLoginCmd = new SqlCommand(@"
         UPDATE Users SET Login = 'user_' + CAST(Id AS VARCHAR(10)) WHERE Login IS NULL OR Login = ''
-        UPDATE Users SET PasswordHash = 'TELEGRAM_AUTH' WHERE PasswordHash IS NULL", conn);
+        UPDATE Users SET PasswordHash = 'NO_AUTH' WHERE PasswordHash IS NULL", conn);
     fixLoginCmd.ExecuteNonQuery();
 
     var seedCmd = new SqlCommand($@"
-        IF NOT EXISTS (SELECT * FROM Users WHERE Login = 'admin1')
-        BEGIN
-            INSERT INTO Users (Login, PasswordHash, Role, IsVerified, CreatedAt)
-            VALUES ('admin1', '{adminHash}', 'Admin', 1, GETDATE())
-        END
-        IF NOT EXISTS (SELECT * FROM Users WHERE Login = 'manager1')
-        BEGIN
-            INSERT INTO Users (Login, PasswordHash, Role, IsVerified, CreatedAt)
-            VALUES ('manager1', '{managerHash}', 'Manager', 1, GETDATE())
-        END
-        IF NOT EXISTS (SELECT * FROM Users WHERE Login = 'admin')
-        BEGIN
-            INSERT INTO Users (Login, PasswordHash, Role, IsVerified, CreatedAt)
-            VALUES ('admin', '{adminHash}', 'Admin', 1, GETDATE())
-        END
-        IF NOT EXISTS (SELECT * FROM Users WHERE Login = 'manager')
-        BEGIN
-            INSERT INTO Users (Login, PasswordHash, Role, IsVerified, CreatedAt)
-            VALUES ('manager', '{managerHash}', 'Manager', 1, GETDATE())
-        END", conn);
+        DELETE FROM Orders WHERE UserId IN (SELECT Id FROM Users WHERE Login IN ('admin1', 'manager1', 'admin', 'manager'))
+        DELETE FROM Users WHERE Login IN ('admin1', 'manager1', 'admin', 'manager')
+        INSERT INTO Users (Login, PasswordHash, Role, IsVerified, CreatedAt)
+        VALUES ('admin1', '{adminHash}', 'Admin', 1, GETDATE())
+        INSERT INTO Users (Login, PasswordHash, Role, IsVerified, CreatedAt)
+        VALUES ('manager1', '{managerHash}', 'Manager', 1, GETDATE())
+        INSERT INTO Users (Login, PasswordHash, Role, IsVerified, CreatedAt)
+        VALUES ('admin', '{adminHash}', 'Admin', 1, GETDATE())
+        INSERT INTO Users (Login, PasswordHash, Role, IsVerified, CreatedAt)
+        VALUES ('manager', '{managerHash}', 'Manager', 1, GETDATE())", conn);
     seedCmd.ExecuteNonQuery();
 
     // Создаём таблицу Robots если её нет
@@ -121,6 +103,20 @@ try
         END", conn);
     createOrdersCmd.ExecuteNonQuery();
 
+    // Создаём таблицу Logs если её нет
+    var createLogsCmd = new SqlCommand(@"
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Logs')
+        BEGIN
+            CREATE TABLE Logs (
+                Id INT IDENTITY(1,1) PRIMARY KEY,
+                ActionDate DATETIME NOT NULL DEFAULT GETDATE(),
+                UserLogin NVARCHAR(MAX) NULL,
+                ActionType NVARCHAR(MAX) NOT NULL,
+                Details NVARCHAR(MAX) NULL
+            )
+        END", conn);
+    createLogsCmd.ExecuteNonQuery();
+
     // Добавляем тестовых роботов если таблица пуста
     var seedRobotsCmd = new SqlCommand(@"
         IF NOT EXISTS (SELECT * FROM Robots)
@@ -150,11 +146,3 @@ app.UseAuthorization();
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-static string ComputeHash(string input)
-{
-    using var sha = SHA256.Create();
-    var bytes = Encoding.UTF8.GetBytes(input);
-    var hash = sha.ComputeHash(bytes);
-    return Convert.ToBase64String(hash);
-}

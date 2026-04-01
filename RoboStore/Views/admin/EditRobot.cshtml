@@ -1,0 +1,38 @@
+@model RoboStore.Models.Robot
+
+@{
+    ViewData["Title"] = "Редактировать робота";
+}
+
+<h1 class="mb-4">Редактировать робота</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="EditRobot" method="post">
+            <input type="hidden" asp-for="Id" />
+
+            <div class="mb-3">
+                <label asp-for="Model" class="form-label">Модель *</label>
+                <input asp-for="Model" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Type" class="form-label">Тип *</label>
+                <input asp-for="Type" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Price" class="form-label">Цена (руб.) *</label>
+                <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" required />
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Stock" class="form-label">Количество на складе *</label>
+                <input asp-for="Stock" class="form-control" type="number" min="0" required />
+            </div>
+
+            <button type="submit" class="btn btn-success">Сохранить</button>
+            <a asp-action="Robots" class="btn btn-secondary">Отмена</a>
+        </form>
+    </div>
+</div>

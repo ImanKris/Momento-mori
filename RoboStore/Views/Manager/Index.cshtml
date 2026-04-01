@@ -1,1 +1,97 @@
-<h1>Панель продаж</h1>
+@{
+    ViewData["Title"] = "Панель менеджера";
+}
+
+<h1 class="mb-4">Панель менеджера</h1>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">В обработке</h5>
+                <p class="card-text display-4">@ViewBag.InProcessingCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Выполнено сегодня</h5>
+                <p class="card-text display-4">@ViewBag.CompletedTodayCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Всего заказов</h5>
+                <p class="card-text display-4">@ViewBag.TotalOrdersCount</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Клиентов</h5>
+                <p class="card-text display-4">@ViewBag.TotalCustomersCount</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Быстрые действия</h5>
+            </div>
+            <div class="card-body">
+                <a asp-action="Orders" class="btn btn-primary w-100 mb-2">Все заказы</a>
+                <a asp-action="Customers" class="btn btn-outline-primary w-100">Список клиентов</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">Последние заказы</h5>
+            </div>
+            <div class="card-body">
+                @{
+                    var recentOrders = ViewBag.RecentOrders as List<RoboStore.Models.Order>;
+                    if (recentOrders != null && recentOrders.Any())
+                    {
+                        <ul class="list-unstyled">
+                            @foreach (var order in recentOrders.Take(5))
+                            {
+                                <li class="mb-2">
+                                    <span class="badge @GetStatusBadgeClass(order.Status)">@order.Status</span>
+                                    Заказ #@order.Id - @order.OrderDate.ToString("dd.MM.yyyy HH:mm")
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Нет заказов</p>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Выполнен" => "bg-success",
+            "В обработке" => "bg-warning text-dark",
+            "Отправлен" => "bg-info",
+            "Доставлен" => "bg-success",
+            "Отменён" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}

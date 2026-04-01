@@ -1,0 +1,36 @@
+@model List<RoboStore.Models.User>
+
+@{
+    ViewData["Title"] = "Клиенты";
+}
+
+<h1 class="mb-4">Клиенты</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Логин</th>
+                <th>Дата регистрации</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.Login</td>
+                    <td>@user.CreatedAt.ToString("dd.MM.yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info text-center py-5">
+        <h4 class="mb-3">Клиентов пока нет</h4>
+    </div>
+}

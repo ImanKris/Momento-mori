@@ -24,8 +24,39 @@
                     <li class="nav-item">
                         <a class="nav-link" asp-controller="User" asp-action="Orders">Мои заказы</a>
                     </li>
+
+                    @if (User.IsInRole("Manager"))
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-warning" href="#" id="managerDropdown" role="button" data-bs-toggle="dropdown">
+                                Панель менеджера
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Manager" asp-action="Index">Дашборд</a></li>
+                                <li><a class="dropdown-item" asp-controller="Manager" asp-action="Orders">Заказы</a></li>
+                                <li><a class="dropdown-item" asp-controller="Manager" asp-action="Customers">Клиенты</a></li>
+                            </ul>
+                        </li>
+                    }
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-danger" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
+                                Админка
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Дашборд</a></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Robots">Роботы</a></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Users">Пользователи</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Logs">Логи</a></li>
+                            </ul>
+                        </li>
+                    }
+
                     <li class="nav-item">
-                        <span class="nav-link text-light">Привет, @ViewBag.UserName</span>
+                        <span class="nav-link text-light">@User.Identity?.Name</span>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-warning" asp-controller="Account" asp-action="Logout">Выход</a>

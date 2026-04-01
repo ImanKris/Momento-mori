@@ -9,19 +9,7 @@
                 <div class="card-body p-5">
                     <h2 class="text-center mb-4">RoboStore</h2>
 
-                    <!-- Telegram Login -->
-                    <div class="text-center mb-4">
-                        <p class="text-muted mb-3">Быстрый вход через Telegram</p>
-                        <script async src="https://telegram.org/js/telegram-widget.js?21" data-telegram-login="RoboStoreMoriBot" data-size="large" data-radius="10" data-auth-url="/Account/TelegramCallback" data-request-access="write"></script>
-                    </div>
-
-                    <div class="text-center mb-4">
-                        <small class="text-muted">— или войдите по логину —</small>
-                    </div>
-
-                    <!-- Login Form -->
-                    <div id="loginForm">
-                        <h5 class="mb-3">Вход по логину</h5>
+                    <form id="loginForm">
                         <div class="mb-3">
                             <label class="form-label">Логин:</label>
                             <input type="text" id="login" class="form-control" placeholder="Введите логин" />
@@ -30,22 +18,9 @@
                             <label class="form-label">Пароль:</label>
                             <input type="password" id="password" class="form-control" placeholder="Введите пароль" />
                         </div>
-                        <button type="button" class="btn btn-primary w-100" onclick="sendCode()">Получить код</button>
+                        <button type="button" class="btn btn-primary w-100" onclick="doLogin()">Войти</button>
                         <div id="loginResult" class="mt-3 text-center"></div>
-                    </div>
-
-                    <!-- Verification Form -->
-                    <div id="verifyForm" style="display:none;">
-                        <h5 class="mb-3">Подтверждение</h5>
-                        <p class="text-muted small mb-3">Код отправлен в Telegram боту <strong>&#64;RoboStoreMoriBot</strong></p>
-                        <div class="mb-3">
-                            <label class="form-label">Код из Telegram:</label>
-                            <input type="text" id="code" class="form-control text-center fs-4" maxlength="6" placeholder="• • • • • •" />
-                        </div>
-                        <button type="button" class="btn btn-success w-100" onclick="verifyCode()">Войти</button>
-                        <button type="button" class="btn btn-link w-100 mt-2" onclick="backToLogin()">Назад</button>
-                        <div id="verifyResult" class="mt-3 text-center"></div>
-                    </div>
+                    </form>
 
                     <hr class="my-4">
                     <p class="text-center text-muted small mb-0">
@@ -58,7 +33,7 @@
 </div>
 
 <script>
-    async function sendCode() {
+    async function doLogin() {
         const login = document.getElementById('login').value.trim();
         const password = document.getElementById('password').value;
 
@@ -67,69 +42,22 @@
             return;
         }
 
-        document.getElementById('loginResult').innerHTML = '<span class="text-muted">Отправка кода...</span>';
+        document.getElementById('loginResult').innerHTML = '<span class="text-muted">Вход...</span>';
 
-        const response = await fetch('/Account/SendCode', {
+        const response = await fetch('/Account/Login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ login, password })
         });
 
         const result = await response.json();
-        const div = document.getElementById('loginResult');
 
         if (result.success) {
-            if (result.noCodeRequired) {
-                div.innerHTML = '<span class="text-success">✅ Вход...</span>';
-                setTimeout(() => window.location.href = result.redirectUrl || '/', 300);
-                return;
-            }
-
-            let message = '✅ ' + result.message;
-            if (result.debugMode) {
-                message += '<br><div class="alert alert-warning mt-2 p-2"><strong>Внимание:</strong> Telegram недоступен. Используйте код: <strong>' + result.message.split(': ')[1] + '</strong></div>';
-            }
-            div.innerHTML = '<span class="text-success">' + message + '</span>';
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('verifyForm').style.display = 'block';
-            document.getElementById('code').focus();
+            document.getElementById('loginResult').innerHTML = '<span class="text-success">Вход...</span>';
+            setTimeout(() => window.location.href = result.redirectUrl || '/', 300);
         } else {
-            div.innerHTML = '<span class="text-danger">❌ ' + result.message + '</span>';
+            document.getElementById('loginResult').innerHTML = '<span class="text-danger">' + result.message + '</span>';
         }
-    }
-
-    async function verifyCode() {
-        const code = document.getElementById('code').value.trim();
-
-        if (!code || code.length !== 6) {
-            document.getElementById('verifyResult').innerHTML = '<span class="text-danger">Введите 6-значный код</span>';
-            return;
-        }
-
-        document.getElementById('verifyResult').innerHTML = '<span class="text-muted">Проверка...</span>';
-
-        const response = await fetch('/Account/VerifyCode', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ login: document.getElementById('login').value.trim(), code })
-        });
-
-        const result = await response.json();
-        const div = document.getElementById('verifyResult');
-
-        if (result.success) {
-            div.innerHTML = '<span class="text-success">✅ Вход...</span>';
-            setTimeout(() => window.location.href = result.redirectUrl || '/', 500);
-        } else {
-            div.innerHTML = '<span class="text-danger">❌ ' + result.message + '</span>';
-        }
-    }
-
-    function backToLogin() {
-        document.getElementById('loginForm').style.display = 'block';
-        document.getElementById('verifyForm').style.display = 'none';
-        document.getElementById('loginResult').innerHTML = '';
-        document.getElementById('verifyResult').innerHTML = '';
     }
 </script>
 
