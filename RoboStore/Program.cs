@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
+using RoboStore.Services;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -9,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<RoboStoreDbContext>();
+builder.Services.AddScoped<SyncService>();
+builder.Services.AddLogging();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -116,6 +119,14 @@ try
             )
         END", conn);
     createLogsCmd.ExecuteNonQuery();
+
+    // Добавляем колонку TempOrderId в Orders если её нет (для sync idempotency)
+    var addTempOrderIdCmd = new SqlCommand(@"
+        IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Orders' AND COLUMN_NAME = 'TempOrderId')
+        BEGIN
+            ALTER TABLE Orders ADD TempOrderId NVARCHAR(MAX) NULL
+        END", conn);
+    addTempOrderIdCmd.ExecuteNonQuery();
 
     // Создаём таблицу RobotTypes если её нет
     var createRobotTypesCmd = new SqlCommand(@"
