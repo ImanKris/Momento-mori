@@ -1,0 +1,219 @@
+/* Connection Status Indicator */
+.connection-status {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.status-icon {
+    font-size: 16px;
+}
+
+.status-unknown {
+    background: #6c757d;
+    color: white;
+}
+
+.status-online {
+    background: #198754;
+    color: white;
+}
+
+.status-fallback {
+    background: #ffc107;
+    color: #212529;
+}
+
+.status-error {
+    background: #dc3545;
+    color: white;
+}
+
+/* Navbar status inline indicator */
+.navbar-status {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+.navbar-status.status-online {
+    background: rgba(25, 135, 84, 0.2);
+    color: #198754;
+}
+
+.navbar-status.status-fallback {
+    background: rgba(255, 193, 7, 0.2);
+    color: #856404;
+}
+
+.navbar-status.status-error {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+}
+
+/* ============ LOG COLOR STATES ============ */
+
+.log-success, .log-success td {
+    background-color: rgba(25, 135, 84, 0.1) !important;
+    color: #146c43;
+}
+
+.log-success .badge {
+    background-color: #198754 !important;
+    color: white;
+}
+
+.log-warning, .log-warning td {
+    background-color: rgba(255, 193, 7, 0.15) !important;
+    color: #664d03;
+}
+
+.log-warning .badge {
+    background-color: #ffc107 !important;
+    color: #212529;
+}
+
+.log-error, .log-error td {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+    color: #b02a37;
+}
+
+.log-error .badge {
+    background-color: #dc3545 !important;
+    color: white;
+}
+
+.log-info, .log-info td {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+    color: #0a58ca;
+}
+
+.log-info .badge {
+    background-color: #0d6efd !important;
+    color: white;
+}
+
+/* Log type to CSS class mapping */
+tr.log-ROBOT_CREATED td,
+tr.log-ORDER_COMPLETED td,
+tr.log-LOGIN_SUCCESS td {
+    background-color: rgba(25, 135, 84, 0.08) !important;
+}
+
+tr.log-ROBOT_UPDATED td,
+tr.log-ORDER_STATUS_CHANGE td,
+tr.log-USER_ROLE_CHANGED td {
+    background-color: rgba(255, 193, 7, 0.1) !important;
+}
+
+tr.log-ROBOT_DELETED td,
+tr.log-ERROR td,
+tr.log-LOGOUT_FAILED td {
+    background-color: rgba(220, 53, 69, 0.08) !important;
+}
+
+tr.log-INFO td,
+tr.log-LOGIN td,
+tr.log-LOGOUT td {
+    background-color: rgba(13, 110, 253, 0.06) !important;
+}
+
+/* Log legend */
+.log-legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 13px;
+}
+
+.log-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.log-legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.legend-success { background: #198754; }
+.legend-warning { background: #ffc107; }
+.legend-error { background: #dc3545; }
+.legend-info { background: #0d6efd; }
+
+/* ============ SYNC INDICATOR ============ */
+
+.sync-indicator {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    z-index: 9998;
+    animation: syncPulse 1.5s infinite;
+}
+
+.sync-syncing {
+    background: #0d6efd;
+    color: white;
+}
+
+.sync-success {
+    background: #198754;
+    color: white;
+}
+
+.sync-error {
+    background: #dc3545;
+    color: white;
+}
+
+@keyframes syncPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* ============ LOG TABLE ENHANCEMENTS ============ */
+
+.log-table-container {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.log-table-container table {
+    margin-bottom: 0;
+}
+
+.log-timestamp {
+    font-family: monospace;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.log-user {
+    font-weight: 500;
+}
+
+.log-details {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
