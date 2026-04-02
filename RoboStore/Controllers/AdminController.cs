@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
 using RoboStore.Models;
+using RoboStore.Services;
 
 namespace RoboStore.Controllers;
 
@@ -10,10 +11,12 @@ namespace RoboStore.Controllers;
 public class AdminController : Controller
 {
     private readonly RoboStoreDbContext _context;
+    private readonly LogBroadcastService _logBroadcast;
 
-    public AdminController(RoboStoreDbContext context)
+    public AdminController(RoboStoreDbContext context, LogBroadcastService logBroadcast)
     {
         _context = context;
+        _logBroadcast = logBroadcast;
     }
 
     public IActionResult Index()
@@ -100,6 +103,7 @@ public class AdminController : Controller
         };
         _context.Logs.Add(log);
         await _context.SaveChangesAsync();
+        await _logBroadcast.BroadcastAsync(log);
 
         TempData["Message"] = "Робот успешно создан";
         return RedirectToAction("Robots");
@@ -176,6 +180,7 @@ public class AdminController : Controller
         };
         _context.Logs.Add(log);
         await _context.SaveChangesAsync();
+        await _logBroadcast.BroadcastAsync(log);
 
         TempData["Message"] = "Робот обновлён";
         return RedirectToAction("Robots");
@@ -211,6 +216,7 @@ public class AdminController : Controller
 
             _context.Robots.Remove(robot);
             await _context.SaveChangesAsync();
+            await _logBroadcast.BroadcastAsync(log);
 
             TempData["Message"] = "Робот удалён";
         }
@@ -260,6 +266,7 @@ public class AdminController : Controller
         };
         _context.Logs.Add(log);
         await _context.SaveChangesAsync();
+        await _logBroadcast.BroadcastAsync(log);
 
         return Json(new { success = true, message = "Роль обновлена" });
     }

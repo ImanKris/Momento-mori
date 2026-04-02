@@ -4,11 +4,56 @@
     ViewData["Title"] = "Системные логи";
 }
 
-<h1 class="mb-4">Системные логи</h1>
+<h1 class="mb-3">Системные логи</h1>
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
+<!-- Controls Row -->
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            <!-- Filter by type -->
+            <select id="filter-type" class="form-select" style="width: auto;">
+                <option value="">Все типы</option>
+                <option value="ROBOT_CREATED">ROBOT_CREATED</option>
+                <option value="ROBOT_UPDATED">ROBOT_UPDATED</option>
+                <option value="ROBOT_DELETED">ROBOT_DELETED</option>
+                <option value="ORDER_STATUS_CHANGE">ORDER_STATUS_CHANGE</option>
+                <option value="USER_ROLE_CHANGED">USER_ROLE_CHANGED</option>
+                <option value="LOGIN">LOGIN</option>
+                <option value="LOGOUT">LOGOUT</option>
+                <option value="LOGIN_SUCCESS">LOGIN_SUCCESS</option>
+                <option value="ORDER_SYNCED">ORDER_SYNCED</option>
+                <option value="ORDER_CREATED">ORDER_CREATED</option>
+            </select>
+
+            <!-- Filter by user -->
+            <input type="text" id="filter-user" class="form-control" placeholder="Фильтр по пользователю" style="width: 150px;" />
+
+            <!-- Filter by date -->
+            <input type="date" id="filter-date" class="form-control" style="width: 160px;" />
+
+            <button id="btn-apply-filters" class="btn btn-primary btn-sm">Применить</button>
+            <button id="btn-clear-filters" class="btn btn-secondary btn-sm">Сбросить</button>
+
+            <span id="signalr-status" class="badge bg-secondary">○ Загрузка...</span>
+            <small class="text-muted ms-auto">
+                Показано: <span id="live-logs-count">@Model.Count</span> из <span id="total-logs-count">@Model.Count</span>
+            </small>
+        </div>
+    </div>
+</div>
+
+<!-- Legend -->
+<div class="log-legend mb-3">
+    <span class="log-legend-item"><span class="log-legend-dot legend-success"></span> Успешно</span>
+    <span class="log-legend-item"><span class="log-legend-dot legend-warning"></span> Изменение</span>
+    <span class="log-legend-item"><span class="log-legend-dot legend-error"></span> Ошибка / Удаление</span>
+    <span class="log-legend-item"><span class="log-legend-dot legend-info"></span> Информация</span>
+</div>
+
+<!-- Logs Table -->
+<div class="table-responsive log-table-container card">
+    <table class="table table-hover mb-0">
+        <thead class="table-dark sticky-top">
             <tr>
                 <th>ID</th>
                 <th>Дата</th>
@@ -17,17 +62,15 @@
                 <th>Детали</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="live-logs-body">
             @foreach (var log in Model)
             {
-                <tr>
+                <tr class="@GetRowCssClass(log.ActionType)">
                     <td>@log.Id</td>
-                    <td>@log.ActionDate.ToString("dd.MM.yyyy HH:mm:ss")</td>
-                    <td>@(log.UserLogin ?? "System")</td>
-                    <td>
-                        <span class="badge @GetActionBadgeClass(log.ActionType)">@log.ActionType</span>
-                    </td>
-                    <td>@log.Details</td>
+                    <td class="log-timestamp">@log.ActionDate.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                    <td class="log-user">@(log.UserLogin ?? "System")</td>
+                    <td><span class="badge @GetActionBadgeClass(log.ActionType)">@log.ActionType</span></td>
+                    <td class="log-details" title="@log.Details">@log.Details</td>
                 </tr>
             }
         </tbody>
@@ -36,10 +79,85 @@
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info text-center py-5">
-        <h4 class="mb-3">Логов пока нет</h4>
-        <p class="text-muted">Логи будут появляться при изменении статусов заказов и других действиях</p>
+    <div class="alert alert-info text-center py-4 mt-3">
+        <h5 class="mb-2">Логов пока нет</h5>
+        <p class="text-muted mb-0">Логи будут появляться при действиях администраторов и менеджеров</p>
     </div>
+}
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="~/js/logsSignalR.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize with existing logs from server
+            if (window.LogsSignalR && window.LogsSignalR.getLogs) {
+                // Seed initial data - the SignalR client will manage updates
+            }
+
+            // Filter handling
+            document.getElementById('btn-apply-filters').addEventListener('click', applyFilters);
+            document.getElementById('btn-clear-filters').addEventListener('click', clearFilters);
+
+            function applyFilters() {
+                const typeFilter = document.getElementById('filter-type').value;
+                const userFilter = document.getElementById('filter-user').value.toLowerCase();
+                const dateFilter = document.getElementById('filter-date').value;
+
+                const rows = document.querySelectorAll('#live-logs-body tr');
+                let visibleCount = 0;
+
+                rows.forEach(function (row) {
+                    let show = true;
+
+                    // Type filter
+                    if (typeFilter) {
+                        const typeCell = row.querySelector('td:nth-child(4) .badge');
+                        if (!typeCell || typeCell.textContent.trim() !== typeFilter) {
+                            show = false;
+                        }
+                    }
+
+                    // User filter
+                    if (userFilter) {
+                        const userCell = row.querySelector('td:nth-child(3)');
+                        if (!userCell || !userCell.textContent.toLowerCase().includes(userFilter)) {
+                            show = false;
+                        }
+                    }
+
+                    // Date filter
+                    if (dateFilter) {
+                        const dateCell = row.querySelector('td:nth-child(2)');
+                        if (dateCell) {
+                            const rowDate = dateCell.textContent.split(' ')[0]; // dd.MM.yyyy
+                            if (rowDate !== dateFilter) {
+                                show = false;
+                            }
+                        }
+                    }
+
+                    row.style.display = show ? '' : 'none';
+                    if (show) visibleCount++;
+                });
+
+                document.getElementById('live-logs-count').textContent = visibleCount;
+            }
+
+            function clearFilters() {
+                document.getElementById('filter-type').value = '';
+                document.getElementById('filter-user').value = '';
+                document.getElementById('filter-date').value = '';
+
+                document.querySelectorAll('#live-logs-body tr').forEach(function (row) {
+                    row.style.display = '';
+                });
+
+                document.getElementById('live-logs-count').textContent =
+                    document.getElementById('total-logs-count').textContent;
+            }
+        });
+    </script>
 }
 
 @{
@@ -49,12 +167,29 @@
         {
             "LOGIN" => "bg-primary",
             "LOGOUT" => "bg-secondary",
+            "LOGIN_SUCCESS" => "bg-success",
+            "LOGOUT_FAILED" => "bg-danger",
             "ORDER_STATUS_CHANGE" => "bg-info",
             "ROBOT_CREATED" => "bg-success",
             "ROBOT_UPDATED" => "bg-warning text-dark",
             "ROBOT_DELETED" => "bg-danger",
             "USER_ROLE_CHANGED" => "bg-warning text-dark",
+            "ORDER_SYNCED" => "bg-success",
+            "ORDER_CREATED" => "bg-success",
+            "ERROR" => "bg-danger",
             _ => "bg-secondary"
+        };
+    }
+
+    string GetRowCssClass(string actionType)
+    {
+        return actionType switch
+        {
+            "ROBOT_CREATED" or "ORDER_COMPLETED" or "LOGIN_SUCCESS" or "ORDER_SYNCED" or "ORDER_CREATED" => "log-success",
+            "ROBOT_UPDATED" or "ORDER_STATUS_CHANGE" or "USER_ROLE_CHANGED" => "log-warning",
+            "ROBOT_DELETED" or "ERROR" or "LOGOUT_FAILED" => "log-error",
+            "LOGIN" or "LOGOUT" or "INFO" => "log-info",
+            _ => ""
         };
     }
 }

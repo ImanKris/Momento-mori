@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
+using RoboStore.Hubs;
 using RoboStore.Services;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,7 +13,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<RoboStoreDbContext>();
 builder.Services.AddScoped<SyncService>();
+builder.Services.AddScoped<LogBroadcastService>();
 builder.Services.AddLogging();
+builder.Services.AddSignalR();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
@@ -206,5 +210,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapHub<LogsHub>("/hubs/logs");
 
 app.Run();

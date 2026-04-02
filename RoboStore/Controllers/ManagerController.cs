@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
 using RoboStore.Models;
+using RoboStore.Services;
 
 namespace RoboStore.Controllers;
 
@@ -10,10 +11,12 @@ namespace RoboStore.Controllers;
 public class ManagerController : Controller
 {
     private readonly RoboStoreDbContext _context;
+    private readonly LogBroadcastService _logBroadcast;
 
-    public ManagerController(RoboStoreDbContext context)
+    public ManagerController(RoboStoreDbContext context, LogBroadcastService logBroadcast)
     {
         _context = context;
+        _logBroadcast = logBroadcast;
     }
 
     public IActionResult Index()
@@ -97,6 +100,7 @@ public class ManagerController : Controller
         };
         _context.Logs.Add(log);
         await _context.SaveChangesAsync();
+        await _logBroadcast.BroadcastAsync(log);
 
         return Json(new { success = true, message = "Статус обновлён" });
     }
