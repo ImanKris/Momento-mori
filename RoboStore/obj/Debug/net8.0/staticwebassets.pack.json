@@ -17,8 +17,16 @@
       "PackagePath": "staticwebassets\\js\\logsSignalR.js"
     },
     {
+      "Id": "D:\\Projects\\Momento-mori\\RoboStore\\wwwroot\\js\\scroll-effects.js",
+      "PackagePath": "staticwebassets\\js\\scroll-effects.js"
+    },
+    {
       "Id": "D:\\Projects\\Momento-mori\\RoboStore\\wwwroot\\js\\syncTrigger.js",
       "PackagePath": "staticwebassets\\js\\syncTrigger.js"
+    },
+    {
+      "Id": "D:\\Projects\\Momento-mori\\RoboStore\\wwwroot\\js\\theme.js",
+      "PackagePath": "staticwebassets\\js\\theme.js"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.RoboStore.Microsoft.AspNetCore.StaticWebAssets.props",

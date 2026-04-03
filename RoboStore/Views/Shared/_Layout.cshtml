@@ -4,98 +4,246 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RoboStore</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" asp-controller="User" asp-action="Index">RoboStore</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="User" asp-action="Index">Каталог</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="User" asp-action="Cart">Корзина</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="User" asp-action="Orders">Мои заказы</a>
-                    </li>
+    <!-- Mobile Warning -->
+    <div class="mobile-warning">
+        <div class="mobile-warning-content">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#00D9FF" stroke-width="2">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                <line x1="12" y1="18" x2="12.01" y2="18"/>
+            </svg>
+            <h3>Оптимизировано для десктопа</h3>
+            <p>RoboStore лучше всего работает на устройствах с экраном 1024px и больше.</p>
+            <a href="/" class="btn btn-secondary" onclick="event.preventDefault(); history.back();">Назад</a>
+        </div>
+    </div>
 
-                    @if (User.IsInRole("Manager"))
-                    {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-warning" href="#" id="managerDropdown" role="button" data-bs-toggle="dropdown">
-                                Панель менеджера
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="Manager" asp-action="Index">Дашборд</a></li>
-                                <li><a class="dropdown-item" asp-controller="Manager" asp-action="Orders">Заказы</a></li>
-                                <li><a class="dropdown-item" asp-controller="Manager" asp-action="Customers">Клиенты</a></li>
-                            </ul>
-                        </li>
-                    }
+    <!-- Page Background Decoration -->
+    <div class="page-bg"></div>
 
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-danger" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">
-                                Админка
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Index">Дашборд</a></li>
-                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Robots">Роботы</a></li>
-                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Users">Пользователи</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Logs">Логи</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" asp-controller="Backup" asp-action="Index">Бэкап</a></li>
-                            </ul>
-                        </li>
-                    }
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="/" class="logo">
+                <span>Robo</span><span>Store</span>
+            </a>
 
-                    <li class="nav-item">
-                        <span class="nav-link text-light" id="nav-connection-status"></span>
-                    </li>
-                    <li class="nav-item">
-                        <span class="nav-link text-light">@User.Identity?.Name</span>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-warning" asp-controller="Account" asp-action="Logout">Выход</a>
-                    </li>
-                </ul>
+            <nav class="nav">
+                <a asp-controller="User" asp-action="Index" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Index" && ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "active" : "")">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    Каталог
+                </a>
+                <a asp-controller="User" asp-action="Cart" class="@(ViewContext.RouteData.Values["action"]?.ToString() == "Cart" ? "active" : "")">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"/>
+                        <circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                    </svg>
+                    Корзина
+                </a>
+                @if (User.IsInRole("Manager"))
+                {
+                    <a asp-controller="Manager" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Manager" ? "active" : "")">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 010 7.75"/>
+                        </svg>
+                        Менеджер
+                    </a>
+                }
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Admin" asp-action="Index" class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "active" : "")">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                        </svg>
+                        Админка
+                    </a>
+                }
+            </nav>
+
+            <div class="d-flex align-items-center gap-2">
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <a asp-controller="User" asp-action="Orders" class="nav-icon" title="Мои заказы">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                    </a>
+                    <a asp-controller="User" asp-action="Cart" class="nav-icon" title="Корзина" id="cartIconHeader">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"/>
+                            <circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                        </svg>
+                        <span class="cart-badge" id="cartBadgeHeader" style="display: none;">0</span>
+                    </a>
+                    <a asp-controller="Account" asp-action="Logout" class="nav-icon" title="Выйти">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-sm">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
+                            <polyline points="10 17 15 12 10 7"/>
+                            <line x1="15" y1="12" x2="3" y2="12"/>
+                        </svg>
+                        Войти
+                    </a>
+                }
             </div>
         </div>
-    </nav>
+    </header>
 
-    <div class="container mt-4">
-        @RenderBody()
-    </div>
+    <!-- Main Content -->
+    <main class="page-wrapper">
+        <div class="page">
+            @RenderBody()
+        </div>
 
-    <footer class="mt-5 py-3 text-center text-muted border-top">
-        <p>&copy; 2026 RoboStore</p>
-    </footer>
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <a href="/" class="logo">
+                            <span>Robo</span><span>Store</span>
+                        </a>
+                        <p>Премиальный магазин роботов-помощников. Инновационные технологии для вашего дома и бизнеса.</p>
+                    </div>
 
-    <!-- Connection Status Indicator -->
-    <div id="connection-status" class="connection-status status-unknown" title="Проверка...">
-        <span class="status-icon">?</span>
-        <span class="status-text">...</span>
-    </div>
+                    <div>
+                        <h4 class="footer-title">Каталог</h4>
+                        <div class="footer-links">
+                            <a asp-controller="User" asp-action="Index">Все роботы</a>
+                            <a asp-controller="User" asp-action="Index" asp-route-category="home">Для дома</a>
+                            <a asp-controller="User" asp-action="Index" asp-route-category="business">Для бизнеса</a>
+                            <a asp-controller="User" asp-action="Index" asp-route-category="entertainment">Развлечения</a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="footer-title">Покупателям</h4>
+                        <div class="footer-links">
+                            <a asp-controller="User" asp-action="Orders">Мои заказы</a>
+                            <a asp-controller="User" asp-action="Cart">Корзина</a>
+                            <a href="#">Доставка</a>
+                            <a href="#">Гарантия</a>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="footer-title">Контакты</h4>
+                        <div class="footer-links">
+                            <a href="tel:+78001234567">8 800 123-45-67</a>
+                            <a href="mailto:info@robostore.ru">info@robostore.ru</a>
+                            <span style="color: var(--text-muted); font-size: 14px;">Москва, ул. Технологическая, 42</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-bottom">
+                    <span>© 2026 RoboStore — Все права защищены</span>
+                    <div class="footer-social">
+                        <a href="#" title="Telegram">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.901-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.258-1.911.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.139-5.062 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.831-2.529 6.998-3.015 3.333-1.386 4.025-1.627 4.477-1.635.099-.002.321.023.465.141.121.1.154.234.169.333.015.099.034.323.019.498z"/>
+                            </svg>
+                        </a>
+                        <a href="#" title="VK">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 13.222c.488.48 1.007.936 1.45 1.409.39.416.664.842.664 1.457 0 .462-.194.907-.604 1.141-.534.305-1.575.137-2.446-.488-1.033-.74-1.785-1.92-2.043-2.442-.154-.31-.11-.51.176-.737.234-.187.652-.268.952-.406-.072-.21-.142-.43-.142-.666 0-.256.06-.492.374-.58.48-.134 1.08.02 1.618.502.37.33.66.728.94 1.11.2.27.38.335.644.335.12 0 .24-.02.356-.065.48-.19.962-.456 1.35-.83.33-.316.49-.69.49-1.148 0-.39-.17-.778-.52-1.04-.43-.32-.996-.57-1.598-.85-.4-.185-.784-.37-1.05-.63-.39-.38-.58-.857-.58-1.37 0-.35.09-.69.28-1.005.25-.42.712-.7 1.21-.88.37-.132.86-.15 1.27-.165l2.04-.045c.35 0 .56.11.61.43.06.35-.01.96-.46 1.84-.18.36-.39.63-.43.69-.07.1-.23.13-.39.06-.25-.1-.78-.4-1.41-1.41-.5-.8-.88-1.7-.88-2.47 0-.91.41-1.66 1.22-2.22.69-.49 1.57-.7 2.33-.7h.04c.33.02.65.01.95-.04.76-.12 1.17.3 1.28.9.11.6.25 1.2.4 1.79.12.46.38.68.76.68.2 0 .41-.03.61-.1.63-.21 1.24-.51 1.79-.9.44-.31.68-.7.68-1.19 0-.46-.25-.87-.66-1.13-.55-.34-1.33-.25-2.23.04-.55.18-1.03.34-1.18.46-.07.06-.1.1-.1.16 0 .07.02.15.05.22.04.08.11.19.32.36.56.44.99.97 1.28 1.59.19.4.27.82.27 1.25 0 .67-.23 1.23-.7 1.67-.21.2-.47.38-.73.53-.16.1-.33.19-.46.29z"/>
+                            </svg>
+                        </a>
+                        <a href="#" title="YouTube">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.441 16.892c-2.102.144-6.784.144-8.883 0C5.282 16.736 5.017 15.622 5 12c.017-3.629.285-4.736 2.558-4.892 2.099-.144 6.782-.144 8.883 0C18.718 7.264 18.982 8.378 19 12c-.018 3.629-.285 4.736-2.559 4.892zM10 9.658l4.917 2.338L10 14.342V9.658z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/fallbackStorage.js"></script>
-    <script src="~/js/connectionStatus.js"></script>
-    <script src="~/js/syncTrigger.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            if (window.ConnectionStatus) {
-                window.ConnectionStatus.start();
+        // Update cart badge
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('robostore_cart') || '[]');
+            const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.getElementById('cartBadgeHeader');
+            if (badge) {
+                badge.textContent = total;
+                badge.style.display = total > 0 ? 'flex' : 'none';
             }
-        });
+        }
+
+        // Toast notifications
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            const icons = {
+                success: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+                error: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+                warning: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+            };
+
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type]}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'toastSlideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Reveal on scroll
+        const revealElements = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        revealElements.forEach(el => revealObserver.observe(el));
+
+        // Initialize
+        updateCartBadge();
+        document.addEventListener('cartUpdated', updateCartBadge);
     </script>
     @RenderSection("Scripts", required: false)
 </body>

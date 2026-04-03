@@ -4,63 +4,289 @@
     ViewData["Title"] = "Добавить робота";
 }
 
-<h1 class="mb-4">Добавить робота</h1>
-
-<div class="card">
-    <div class="card-body">
-        @if (!ViewData.ModelState.IsValid)
-        {
-            <div class="alert alert-danger">
-                @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-                {
-                    <p class="mb-0">@modelError.ErrorMessage</p>
-                }
-            </div>
-        }
-
-        <form asp-action="CreateRobot" method="post">
-            <div class="mb-3">
-                <label asp-for="Model" class="form-label">Модель *</label>
-                <input asp-for="Model" name="Model" class="form-control" required />
-            </div>
-
-            <div class="mb-3">
-                <label for="TypeId" class="form-label">Тип робота *</label>
-                <select id="TypeId" name="TypeId" class="form-select" required>
-                    <option value="">-- Выберите тип --</option>
-                    @if (ViewBag.RobotTypes != null)
-                    {
-                        foreach (var type in ViewBag.RobotTypes)
-                        {
-                            <option value="@type.Id">@type.Name</option>
-                        }
-                    }
-                </select>
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="SerialNumber" class="form-label">Серийный номер</label>
-                <input asp-for="SerialNumber" name="SerialNumber" class="form-control" />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Price" class="form-label">Цена (руб.) *</label>
-                <input asp-for="Price" name="Price" class="form-control" type="number" step="0.01" min="0" required />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Stock" class="form-label">Количество на складе *</label>
-                <input asp-for="Stock" name="Stock" class="form-control" type="number" min="0" required />
-            </div>
-
-            <div class="mb-3">
-                <label asp-for="Description" class="form-label">Описание</label>
-                <textarea asp-for="Description" name="Description" class="form-control" rows="3"></textarea>
-                <small class="text-muted">Если оставить пустым, описание будет сгенерировано автоматически</small>
-            </div>
-
-            <button type="submit" class="btn btn-success">Создать</button>
-            <a asp-action="Robots" class="btn btn-secondary">Отмена</a>
-        </form>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="page-header-content">
+        <div class="page-header-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="3" width="20" height="14" rx="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+        </div>
+        <div>
+            <h1 class="page-title">Добавить робота</h1>
+            <p class="page-subtitle">Создание нового товара в каталоге</p>
+        </div>
     </div>
 </div>
+
+<div class="form-container">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-error mb-6">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="15" y1="9" x2="9" y2="15"/>
+                <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            @foreach (var modelError in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <p>@modelError.ErrorMessage</p>
+            }
+        </div>
+    }
+
+    <form asp-action="CreateRobot" method="post" class="form-card">
+        <div class="form-card-header">
+            <h2 class="form-card-title">Информация о роботе</h2>
+        </div>
+        <div class="form-card-body">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label" for="Model">Модель *</label>
+                    <input asp-for="Model" name="Model" class="form-control" required placeholder="Например: Robot X1" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="TypeId">Тип робота *</label>
+                    <select id="TypeId" name="TypeId" class="form-select" required>
+                        <option value="">-- Выберите тип --</option>
+                        @if (ViewBag.RobotTypes != null)
+                        {
+                            foreach (var type in ViewBag.RobotTypes)
+                            {
+                                <option value="@type.Id">@type.Name</option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="SerialNumber">Серийный номер</label>
+                    <input asp-for="SerialNumber" name="SerialNumber" class="form-control" placeholder="Необязательно" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Price">Цена (₽) *</label>
+                    <input asp-for="Price" name="Price" class="form-control" type="number" step="0.01" min="0" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Stock">На складе *</label>
+                    <input asp-for="Stock" name="Stock" class="form-control" type="number" min="0" required />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="Description">Описание</label>
+                <textarea asp-for="Description" name="Description" class="form-control" rows="4" placeholder="Необязательно — будет сгенерировано автоматически"></textarea>
+            </div>
+        </div>
+        <div class="form-card-footer">
+            <button type="submit" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                Создать
+            </button>
+            <a asp-action="Robots" class="btn btn-ghost">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                Отмена
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    .page-header {
+        padding: var(--space-8) 0 var(--space-10);
+    }
+
+    .page-header-content {
+        display: flex;
+        align-items: center;
+        gap: var(--space-5);
+    }
+
+    .page-header-icon {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--accent-cobalt-subtle);
+        border-radius: var(--radius-xl);
+        color: var(--accent-cobalt);
+    }
+
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: var(--weight-bold);
+        color: var(--text-primary);
+        margin: 0 0 var(--space-1);
+    }
+
+    .page-subtitle {
+        font-size: 0.9375rem;
+        color: var(--text-muted);
+        margin: 0;
+    }
+
+    .form-container {
+        max-width: 800px;
+    }
+
+    .form-card {
+        background: var(--surface-1);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+    }
+
+    .form-card-header {
+        padding: var(--space-5) var(--space-6);
+        background: var(--surface-2);
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .form-card-title {
+        font-size: 1rem;
+        font-weight: var(--weight-semibold);
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .form-card-body {
+        padding: var(--space-6);
+    }
+
+    .form-card-footer {
+        display: flex;
+        gap: var(--space-3);
+        padding: var(--space-5) var(--space-6);
+        background: var(--surface-2);
+        border-top: 1px solid var(--border-subtle);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-5);
+        margin-bottom: var(--space-5);
+    }
+
+    @@media (max-width: 640px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .form-group {
+        margin-bottom: var(--space-5);
+    }
+
+    .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: var(--weight-medium);
+        color: var(--text-secondary);
+        margin-bottom: var(--space-2);
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        padding: var(--space-3) var(--space-4);
+        background: var(--surface-2);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-md);
+        font-size: 0.9375rem;
+        color: var(--text-primary);
+        transition: all 0.2s;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--accent-cobalt);
+        box-shadow: 0 0 0 3px var(--accent-cobalt-subtle);
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: var(--text-faint);
+    }
+
+    textarea.form-control {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-5);
+        font-size: 0.9375rem;
+        font-weight: var(--weight-medium);
+        border-radius: var(--radius-md);
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-primary {
+        background: var(--accent-cobalt);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: var(--accent-cobalt-hover);
+        color: white;
+    }
+
+    .btn-ghost {
+        background: transparent;
+        color: var(--text-secondary);
+    }
+
+    .btn-ghost:hover {
+        background: var(--surface-3);
+        color: var(--text-primary);
+    }
+
+    .alert {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--space-3);
+        padding: var(--space-4);
+        border-radius: var(--radius-lg);
+        font-size: 0.875rem;
+    }
+
+    .alert-error {
+        background: var(--error-glow);
+        border: 1px solid rgba(248, 113, 113, 0.2);
+        color: var(--error);
+    }
+
+    .alert p {
+        margin: 0 0 var(--space-1);
+    }
+
+    .alert p:last-child {
+        margin-bottom: 0;
+    }
+
+    .mb-6 { margin-bottom: var(--space-6); }
+</style>

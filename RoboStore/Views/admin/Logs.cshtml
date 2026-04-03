@@ -4,192 +4,109 @@
     ViewData["Title"] = "Системные логи";
 }
 
-<h1 class="mb-3">Системные логи</h1>
-
-<!-- Controls Row -->
-<div class="row mb-3">
-    <div class="col-md-12">
-        <div class="d-flex gap-2 flex-wrap align-items-center">
-            <!-- Filter by type -->
-            <select id="filter-type" class="form-select" style="width: auto;">
-                <option value="">Все типы</option>
-                <option value="ROBOT_CREATED">ROBOT_CREATED</option>
-                <option value="ROBOT_UPDATED">ROBOT_UPDATED</option>
-                <option value="ROBOT_DELETED">ROBOT_DELETED</option>
-                <option value="ORDER_STATUS_CHANGE">ORDER_STATUS_CHANGE</option>
-                <option value="USER_ROLE_CHANGED">USER_ROLE_CHANGED</option>
-                <option value="LOGIN">LOGIN</option>
-                <option value="LOGOUT">LOGOUT</option>
-                <option value="LOGIN_SUCCESS">LOGIN_SUCCESS</option>
-                <option value="ORDER_SYNCED">ORDER_SYNCED</option>
-                <option value="ORDER_CREATED">ORDER_CREATED</option>
-            </select>
-
-            <!-- Filter by user -->
-            <input type="text" id="filter-user" class="form-control" placeholder="Фильтр по пользователю" style="width: 150px;" />
-
-            <!-- Filter by date -->
-            <input type="date" id="filter-date" class="form-control" style="width: 160px;" />
-
-            <button id="btn-apply-filters" class="btn btn-primary btn-sm">Применить</button>
-            <button id="btn-clear-filters" class="btn btn-secondary btn-sm">Сбросить</button>
-
-            <span id="signalr-status" class="badge bg-secondary">○ Загрузка...</span>
-            <small class="text-muted ms-auto">
-                Показано: <span id="live-logs-count">@Model.Count</span> из <span id="total-logs-count">@Model.Count</span>
-            </small>
+<div class="page-header">
+    <div class="d-flex align-items-center gap-4">
+        <div class="admin-header-icon" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: rgba(0, 217, 255, 0.1); border-radius: 16px; color: var(--accent-primary);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+            </svg>
+        </div>
+        <div>
+            <h1 class="page-title">Системные логи</h1>
+            <p class="page-subtitle">Журнал действий и событий</p>
         </div>
     </div>
 </div>
 
-<!-- Legend -->
-<div class="log-legend mb-3">
-    <span class="log-legend-item"><span class="log-legend-dot legend-success"></span> Успешно</span>
-    <span class="log-legend-item"><span class="log-legend-dot legend-warning"></span> Изменение</span>
-    <span class="log-legend-item"><span class="log-legend-dot legend-error"></span> Ошибка / Удаление</span>
-    <span class="log-legend-item"><span class="log-legend-dot legend-info"></span> Информация</span>
-</div>
-
-<!-- Logs Table -->
-<div class="table-responsive log-table-container card">
-    <table class="table table-hover mb-0">
-        <thead class="table-dark sticky-top">
-            <tr>
-                <th>ID</th>
-                <th>Дата</th>
-                <th>Пользователь</th>
-                <th>Тип действия</th>
-                <th>Детали</th>
-            </tr>
-        </thead>
-        <tbody id="live-logs-body">
-            @foreach (var log in Model)
-            {
-                <tr class="@GetRowCssClass(log.ActionType)">
-                    <td>@log.Id</td>
-                    <td class="log-timestamp">@log.ActionDate.ToString("dd.MM.yyyy HH:mm:ss")</td>
-                    <td class="log-user">@(log.UserLogin ?? "System")</td>
-                    <td><span class="badge @GetActionBadgeClass(log.ActionType)">@log.ActionType</span></td>
-                    <td class="log-details" title="@log.Details">@log.Details</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
-
-@if (!Model.Any())
-{
-    <div class="alert alert-info text-center py-4 mt-3">
-        <h5 class="mb-2">Логов пока нет</h5>
-        <p class="text-muted mb-0">Логи будут появляться при действиях администраторов и менеджеров</p>
+<div class="admin-table-card">
+    <div class="admin-table-header">
+        <div class="admin-table-title">Записи (@(Model?.Count ?? 0))</div>
+        <div class="d-flex gap-3">
+            <select class="status-select" onchange="filterByType(this.value)" style="min-width: 160px;">
+                <option value="">Все типы</option>
+                <option value="LOGIN">LOGIN</option>
+                <option value="LOGOUT">LOGOUT</option>
+                <option value="ORDER_CREATED">ORDER_CREATED</option>
+                <option value="ORDER_STATUS_CHANGE">ORDER_STATUS_CHANGE</option>
+                <option value="ROBOT_CREATED">ROBOT_CREATED</option>
+                <option value="ROBOT_UPDATED">ROBOT_UPDATED</option>
+                <option value="ROBOT_DELETED">ROBOT_DELETED</option>
+                <option value="USER_ROLE_CHANGED">USER_ROLE_CHANGED</option>
+            </select>
+        </div>
     </div>
-}
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Время</th>
+                        <th>Пользователь</th>
+                        <th>Тип</th>
+                        <th>Детали</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTableBody">
+                    @foreach (var log in Model)
+                    {
+                        var badgeClass = log.ActionType switch
+                        {
+                            "LOGIN" or "ROBOT_CREATED" or "ORDER_CREATED" => "primary",
+                            "LOGOUT" => "info",
+                            "ORDER_STATUS_CHANGE" or "ROBOT_UPDATED" or "USER_ROLE_CHANGED" => "warning",
+                            "ROBOT_DELETED" => "error",
+                            _ => "info"
+                        };
+                        <tr data-type="@log.ActionType">
+                            <td style="font-family: monospace; color: var(--text-muted); font-size: 13px; white-space: nowrap;">@log.ActionDate.ToString("dd MMM yyyy HH:mm:ss")</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 28px; height: 28px; background: var(--bg-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">@(log.UserLogin?[0] ?? 'S')</div>
+                                    <span>@(log.UserLogin ?? "System")</span>
+                                </div>
+                            </td>
+                            <td><span class="badge badge-@badgeClass">@log.ActionType</span></td>
+                            <td style="color: var(--text-muted); max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="@log.Details">@log.Details</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                </svg>
+            </div>
+            <h3 class="empty-state-title">Логов пока нет</h3>
+        </div>
+    }
+</div>
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <script src="~/js/logsSignalR.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Initialize with existing logs from server
-            if (window.LogsSignalR && window.LogsSignalR.getLogs) {
-                // Seed initial data - the SignalR client will manage updates
-            }
-
-            // Filter handling
-            document.getElementById('btn-apply-filters').addEventListener('click', applyFilters);
-            document.getElementById('btn-clear-filters').addEventListener('click', clearFilters);
-
-            function applyFilters() {
-                const typeFilter = document.getElementById('filter-type').value;
-                const userFilter = document.getElementById('filter-user').value.toLowerCase();
-                const dateFilter = document.getElementById('filter-date').value;
-
-                const rows = document.querySelectorAll('#live-logs-body tr');
-                let visibleCount = 0;
-
-                rows.forEach(function (row) {
-                    let show = true;
-
-                    // Type filter
-                    if (typeFilter) {
-                        const typeCell = row.querySelector('td:nth-child(4) .badge');
-                        if (!typeCell || typeCell.textContent.trim() !== typeFilter) {
-                            show = false;
-                        }
-                    }
-
-                    // User filter
-                    if (userFilter) {
-                        const userCell = row.querySelector('td:nth-child(3)');
-                        if (!userCell || !userCell.textContent.toLowerCase().includes(userFilter)) {
-                            show = false;
-                        }
-                    }
-
-                    // Date filter
-                    if (dateFilter) {
-                        const dateCell = row.querySelector('td:nth-child(2)');
-                        if (dateCell) {
-                            const rowDate = dateCell.textContent.split(' ')[0]; // dd.MM.yyyy
-                            if (rowDate !== dateFilter) {
-                                show = false;
-                            }
-                        }
-                    }
-
-                    row.style.display = show ? '' : 'none';
-                    if (show) visibleCount++;
-                });
-
-                document.getElementById('live-logs-count').textContent = visibleCount;
-            }
-
-            function clearFilters() {
-                document.getElementById('filter-type').value = '';
-                document.getElementById('filter-user').value = '';
-                document.getElementById('filter-date').value = '';
-
-                document.querySelectorAll('#live-logs-body tr').forEach(function (row) {
-                    row.style.display = '';
-                });
-
-                document.getElementById('live-logs-count').textContent =
-                    document.getElementById('total-logs-count').textContent;
-            }
-        });
-    </script>
 }
 
-@{
-    string GetActionBadgeClass(string actionType)
-    {
-        return actionType switch
-        {
-            "LOGIN" => "bg-primary",
-            "LOGOUT" => "bg-secondary",
-            "LOGIN_SUCCESS" => "bg-success",
-            "LOGOUT_FAILED" => "bg-danger",
-            "ORDER_STATUS_CHANGE" => "bg-info",
-            "ROBOT_CREATED" => "bg-success",
-            "ROBOT_UPDATED" => "bg-warning text-dark",
-            "ROBOT_DELETED" => "bg-danger",
-            "USER_ROLE_CHANGED" => "bg-warning text-dark",
-            "ORDER_SYNCED" => "bg-success",
-            "ORDER_CREATED" => "bg-success",
-            "ERROR" => "bg-danger",
-            _ => "bg-secondary"
-        };
-    }
-
-    string GetRowCssClass(string actionType)
-    {
-        return actionType switch
-        {
-            "ROBOT_CREATED" or "ORDER_COMPLETED" or "LOGIN_SUCCESS" or "ORDER_SYNCED" or "ORDER_CREATED" => "log-success",
-            "ROBOT_UPDATED" or "ORDER_STATUS_CHANGE" or "USER_ROLE_CHANGED" => "log-warning",
-            "ROBOT_DELETED" or "ERROR" or "LOGOUT_FAILED" => "log-error",
-            "LOGIN" or "LOGOUT" or "INFO" => "log-info",
-            _ => ""
-        };
-    }
+<script>
+function filterByType(type) {
+    const rows = document.querySelectorAll('#logsTableBody tr');
+    rows.forEach(row => {
+        if (!type || row.dataset.type === type) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
 }
+</script>

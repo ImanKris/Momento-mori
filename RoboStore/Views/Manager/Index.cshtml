@@ -2,96 +2,147 @@
     ViewData["Title"] = "Панель менеджера";
 }
 
-<h1 class="mb-4">Панель менеджера</h1>
-
-<div class="row">
-    <div class="col-md-3">
-        <div class="card text-white bg-warning mb-3">
-            <div class="card-body">
-                <h5 class="card-title">В обработке</h5>
-                <p class="card-text display-4">@ViewBag.InProcessingCount</p>
-            </div>
+<div class="page-header">
+    <div class="d-flex align-items-center gap-4">
+        <div class="admin-header-icon" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: rgba(0, 217, 255, 0.1); border-radius: 16px; color: var(--accent-primary);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
         </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-success mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Выполнено сегодня</h5>
-                <p class="card-text display-4">@ViewBag.CompletedTodayCount</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Всего заказов</h5>
-                <p class="card-text display-4">@ViewBag.TotalOrdersCount</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-white bg-info mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Клиентов</h5>
-                <p class="card-text display-4">@ViewBag.TotalCustomersCount</p>
-            </div>
+        <div>
+            <h1 class="page-title">Панель менеджера</h1>
+            <p class="page-subtitle">Управление заказами и клиентами</p>
         </div>
     </div>
 </div>
 
-<div class="row mt-4">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-dark text-white">
-                <h5 class="mb-0">Быстрые действия</h5>
-            </div>
-            <div class="card-body">
-                <a asp-action="Orders" class="btn btn-primary w-100 mb-2">Все заказы</a>
-                <a asp-action="Customers" class="btn btn-outline-primary w-100">Список клиентов</a>
+<!-- Stats Grid -->
+<div class="manager-stats">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(255, 215, 64, 0.1); color: var(--warning);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+            </svg>
+        </div>
+        <div class="stat-value" style="color: var(--warning);">@ViewBag.InProcessingCount</div>
+        <div class="stat-label">В обработке</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(0, 230, 118, 0.1); color: var(--success);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+        </div>
+        <div class="stat-value" style="color: var(--success);">@ViewBag.CompletedTodayCount</div>
+        <div class="stat-label">Выполнено сегодня</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+        </div>
+        <div class="stat-value">@ViewBag.TotalOrdersCount</div>
+        <div class="stat-label">Всего заказов</div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(74, 127, 167, 0.2); color: var(--accent-secondary);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                <path d="M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+        </div>
+        <div class="stat-value">@ViewBag.TotalCustomersCount</div>
+        <div class="stat-label">Клиентов</div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="grid grid-2 gap-6">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 8px;">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                Быстрые действия
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="d-flex gap-3">
+                <a asp-action="Orders" class="btn btn-primary btn-lg flex-1">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <path d="M16 10a4 4 0 01-8 0"/>
+                    </svg>
+                    Все заказы
+                </a>
+                <a asp-action="Customers" class="btn btn-secondary btn-lg flex-1">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                    Клиенты
+                </a>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-dark text-white">
-                <h5 class="mb-0">Последние заказы</h5>
-            </div>
-            <div class="card-body">
-                @{
-                    var recentOrders = ViewBag.RecentOrders as List<RoboStore.Models.Order>;
-                    if (recentOrders != null && recentOrders.Any())
-                    {
-                        <ul class="list-unstyled">
-                            @foreach (var order in recentOrders.Take(5))
+
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 8px;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                Последние заказы
+            </h2>
+        </div>
+        <div class="card-body">
+            @{
+                var recentOrders = ViewBag.RecentOrders as List<RoboStore.Models.Order>;
+                if (recentOrders != null && recentOrders.Any())
+                {
+                    <div class="d-flex flex-column gap-2">
+                        @foreach (var order in recentOrders.Take(5))
+                        {
+                            var statusClass = order.Status switch
                             {
-                                <li class="mb-2">
-                                    <span class="badge @GetStatusBadgeClass(order.Status)">@order.Status</span>
-                                    Заказ #@order.Id - @order.OrderDate.ToString("dd.MM.yyyy HH:mm")
-                                </li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <p class="text-muted">Нет заказов</p>
-                    }
+                                "Выполнен" => "success",
+                                "В обработке" => "warning",
+                                "Отправлен" => "primary",
+                                "Отменён" => "error",
+                                _ => "info"
+                            };
+                            <div class="d-flex justify-content-between align-items-center p-3" style="background: var(--bg-tertiary); border-radius: 8px;">
+                                <div class="d-flex flex-column gap-1">
+                                    <span style="font-weight: 600; color: var(--text-primary);">#@order.Id @order.Robot?.Model</span>
+                                    <span style="font-size: 12px; color: var(--text-muted);">@order.User?.Login</span>
+                                </div>
+                                <span class="badge badge-@statusClass">@order.Status</span>
+                            </div>
+                        }
+                    </div>
                 }
-            </div>
+                else
+                {
+                    <p style="color: var(--text-muted); text-align: center; padding: 20px;">Нет заказов</p>
+                }
+            }
         </div>
     </div>
 </div>
-
-@{
-    string GetStatusBadgeClass(string status)
-    {
-        return status switch
-        {
-            "Выполнен" => "bg-success",
-            "В обработке" => "bg-warning text-dark",
-            "Отправлен" => "bg-info",
-            "Доставлен" => "bg-success",
-            "Отменён" => "bg-danger",
-            _ => "bg-secondary"
-        };
-    }
-}

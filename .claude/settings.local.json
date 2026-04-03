@@ -41,7 +41,15 @@
       "Bash(pkill -f \"dotnet run\")",
       "Bash(ASPNETCORE_ENVIRONMENT=Development dotnet run --urls \"http://localhost:5050\")",
       "Bash(netstat -ano)",
-      "Bash(ASPNETCORE_ENVIRONMENT=Development dotnet run --urls \"http://localhost:5051\")"
+      "Bash(ASPNETCORE_ENVIRONMENT=Development dotnet run --urls \"http://localhost:5051\")",
+      "Bash(taskkill //F //PID 22332)",
+      "Bash(grep -l \"@keyframes\\\\|@media\" */*.cshtml)",
+      "Bash(taskkill //F //PID 23668)",
+      "Bash(taskkill /F /PID 17628)",
+      "Bash(taskkill //F //PID 23064)",
+      "Bash(start:*)",
+      "Bash(taskkill //F //PID 24924)",
+      "Bash(taskkill //F //PID 21232)"
     ]
   }
 }

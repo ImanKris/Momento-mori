@@ -4,76 +4,124 @@
     ViewData["Title"] = "Управление пользователями";
 }
 
-<h1 class="mb-4">Управление пользователями</h1>
-
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Логин</th>
-                <th>Роль</th>
-                <th>Дата регистрации</th>
-                <th>Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in Model)
-            {
-                <tr id="user-row-@user.Id">
-                    <td>@user.Id</td>
-                    <td>@user.Login</td>
-                    <td>
-                        <select class="form-select form-select-sm role-select" data-user-id="@user.Id"
-                                onchange="updateRole(@user.Id, this.value)" style="width: auto;">
-                            <option value="User" selected="@(user.Role == "User")">User</option>
-                            <option value="Manager" selected="@(user.Role == "Manager")">Manager</option>
-                            <option value="Admin" selected="@(user.Role == "Admin")">Admin</option>
-                        </select>
-                    </td>
-                    <td>@user.CreatedAt.ToString("dd.MM.yyyy")</td>
-                    <td>
-                        @if (user.Role != "Admin")
-                        {
-                            <span class="text-muted">—</span>
-                        }
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+<div class="page-header">
+    <div class="d-flex align-items-center gap-4">
+        <div class="admin-header-icon" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: rgba(0, 217, 255, 0.1); border-radius: 16px; color: var(--accent-primary);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                <path d="M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+        </div>
+        <div>
+            <h1 class="page-title">Пользователи</h1>
+            <p class="page-subtitle">Настройка ролей и прав доступа</p>
+        </div>
+    </div>
 </div>
 
-@if (!Model.Any())
-{
-    <div class="alert alert-info text-center py-5">
-        <h4 class="mb-3">Пользователей пока нет</h4>
+<div class="admin-table-card">
+    <div class="admin-table-header">
+        <div class="admin-table-title">Пользователи (@(Model?.Count ?? 0))</div>
+        <div class="admin-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" placeholder="Поиск..." onkeyup="searchUsers(this.value)" />
+        </div>
     </div>
-}
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Пользователь</th>
+                        <th>Роль</th>
+                        <th>Дата регистрации</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    @foreach (var user in Model)
+                    {
+                        <tr data-login="@user.Login.ToLower()">
+                            <td style="font-family: monospace; color: var(--text-muted); font-size: 13px;">#@user.Id</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: var(--bg-primary);">@user.Login[0]</div>
+                                    <span style="font-weight: 600;">@user.Login</span>
+                                </div>
+                            </td>
+                            <td>
+                                <select class="status-select" data-user-id="@user.Id" onchange="updateRole(@user.Id, this.value)" style="min-width: 120px;">
+                                    <option value="User" selected="@(user.Role == "User" ? "selected" : null)">User</option>
+                                    <option value="Manager" selected="@(user.Role == "Manager" ? "selected" : null)">Manager</option>
+                                    <option value="Admin" selected="@(user.Role == "Admin" ? "selected" : null)">Admin</option>
+                                </select>
+                            </td>
+                            <td style="color: var(--text-muted);">@user.CreatedAt.ToString("dd MMMM yyyy")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                </svg>
+            </div>
+            <h3 class="empty-state-title">Пользователей пока нет</h3>
+        </div>
+    }
+</div>
 
 @section Scripts {
-    <script>
-        async function updateRole(userId, newRole) {
-            try {
-                const response = await fetch('@Url.Action("UpdateUserRole", "Admin")', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ userId: userId, newRole: newRole })
-                });
+<script>
+async function updateRole(userId, newRole) {
+    try {
+        const response = await fetch('@Url.Action("UpdateUserRole", "Admin")', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: userId, newRole: newRole })
+        });
 
-                const data = await response.json();
+        const data = await response.json();
 
-                if (!data.success) {
-                    alert(data.message || 'Ошибка при обновлении роли');
-                    location.reload();
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Произошла ошибка при обновлении роли');
-                location.reload();
-            }
+        if (data.success) {
+            showToast('Роль обновлена', 'success');
+        } else {
+            showToast(data.message || 'Ошибка при обновлении роли', 'error');
+            location.reload();
         }
-    </script>
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Ошибка при обновлении роли', 'error');
+        location.reload();
+    }
+}
+
+function searchUsers(query) {
+    const rows = document.querySelectorAll('#usersTableBody tr');
+    const q = query.toLowerCase();
+    rows.forEach(row => {
+        if (row.dataset.login.includes(q)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
 }

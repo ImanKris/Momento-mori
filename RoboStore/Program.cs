@@ -47,6 +47,8 @@ static string ComputeHash(string input)
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+
 // Добавляем колонки в базу если их нет
 try
 {

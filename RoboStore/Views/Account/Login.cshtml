@@ -1,86 +1,182 @@
 @{
-    ViewData["Title"] = "Вход в RoboStore";
+    ViewData["Title"] = "Вход";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4">RoboStore</h2>
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <a href="/" class="logo">
+                <span>Robo</span><span>Store</span>
+            </a>
+        </div>
 
-                    <form id="loginForm">
-                        <div class="mb-3">
-                            <label class="form-label">Логин:</label>
-                            <input type="text" id="login" class="form-control" placeholder="Введите логин" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Пароль:</label>
-                            <div class="position-relative">
-                                <input type="password" id="password" class="form-control pe-5" placeholder="Введите пароль" />
-                                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y pe-3" onclick="togglePassword('password', this)" style="text-decoration: none;">
-                                    👁️
-                                </button>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-primary w-100" onclick="doLogin()">Войти</button>
-                        <div id="loginResult" class="mt-3 text-center"></div>
-                    </form>
+        <div class="auth-tabs">
+            <button class="auth-tab active" onclick="showTab('login')">Вход</button>
+            <button class="auth-tab" onclick="showTab('register')">Регистрация</button>
+        </div>
 
-                    <hr class="my-4">
-                    <p class="text-center text-muted small mb-0">
-                        Нет аккаунта? <a href="/Account/Register">Зарегистрироваться</a>
-                    </p>
+        <!-- Login Form -->
+        <div id="loginTab">
+            <h2 class="auth-title">С возвращением!</h2>
+            <p class="auth-subtitle">Войдите в свой аккаунт</p>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Логин</label>
+                    <input type="text" id="loginUsername" class="form-control" placeholder="Введите логин" autocomplete="username" />
                 </div>
-            </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Введите пароль" autocomplete="current-password" />
+                </div>
+                <button type="button" class="btn btn-primary btn-block btn-lg" onclick="doLogin()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
+                        <polyline points="10 17 15 12 10 7"/>
+                        <line x1="15" y1="12" x2="3" y2="12"/>
+                    </svg>
+                    Войти
+                </button>
+                <div id="loginResult" class="mt-4"></div>
+            </form>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerTab" style="display: none;">
+            <h2 class="auth-title">Создать аккаунт</h2>
+            <p class="auth-subtitle">Присоединяйтесь к RoboStore</p>
+
+            <form id="regForm">
+                <div class="form-group">
+                    <label class="form-label">Логин</label>
+                    <input type="text" id="regLogin" class="form-control" placeholder="Минимум 3 символа" autocomplete="username" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" id="regPassword" class="form-control" placeholder="Минимум 4 символа" autocomplete="new-password" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Подтверждение пароля</label>
+                    <input type="password" id="regConfirmPassword" class="form-control" placeholder="Повторите пароль" autocomplete="new-password" />
+                </div>
+                <button type="button" class="btn btn-primary btn-block btn-lg" onclick="doRegister()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                    </svg>
+                    Создать аккаунт
+                </button>
+                <div id="regResult" class="mt-4"></div>
+            </form>
+        </div>
+
+        <div class="auth-footer">
+            <a href="/" class="btn btn-ghost btn-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="19" y1="12" x2="5" y2="12"/>
+                    <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                На главную
+            </a>
         </div>
     </div>
 </div>
 
 <script>
-    function togglePassword(inputId, btn) {
-        const input = document.getElementById(inputId);
-        if (input.type === 'password') {
-            input.type = 'text';
-            btn.innerHTML = '🙈';
-        } else {
-            input.type = 'password';
-            btn.innerHTML = '👁️';
-        }
+function showTab(tab) {
+    const loginTab = document.getElementById('loginTab');
+    const registerTab = document.getElementById('registerTab');
+    const tabs = document.querySelectorAll('.auth-tab');
+
+    tabs.forEach(t => t.classList.remove('active'));
+
+    if (tab === 'login') {
+        loginTab.style.display = 'block';
+        registerTab.style.display = 'none';
+        tabs[0].classList.add('active');
+    } else {
+        loginTab.style.display = 'none';
+        registerTab.style.display = 'block';
+        tabs[1].classList.add('active');
+    }
+}
+
+async function doLogin() {
+    const login = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const result = document.getElementById('loginResult');
+
+    if (!login || !password) {
+        result.innerHTML = '<div class="alert alert-error"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Заполните все поля</div>';
+        return;
     }
 
-    async function doLogin() {
-        const login = document.getElementById('login').value.trim();
-        const password = document.getElementById('password').value;
+    result.innerHTML = '<div class="alert alert-info"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Вход...</div>';
 
-        if (!login || !password) {
-            document.getElementById('loginResult').innerHTML = '<span class="text-danger">Заполните все поля</span>';
-            return;
-        }
-
-        document.getElementById('loginResult').innerHTML = '<span class="text-muted">Вход...</span>';
-
+    try {
         const response = await fetch('/Account/Login', {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ login, password })
         });
+        const data = await response.json();
 
-        const result = await response.json();
-
-        if (result.success) {
-            document.getElementById('loginResult').innerHTML = '<span class="text-success">Вход...</span>';
-            setTimeout(() => window.location.href = result.redirectUrl || '/', 300);
+        if (data.success) {
+            result.innerHTML = '<div class="alert alert-success"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Успешно!</div>';
+            setTimeout(() => window.location.href = data.redirectUrl || '/', 500);
         } else {
-            document.getElementById('loginResult').innerHTML = '<span class="text-danger">' + result.message + '</span>';
+            result.innerHTML = '<div class="alert alert-error"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>' + data.message + '</div>';
         }
+    } catch (e) {
+        result.innerHTML = '<div class="alert alert-error"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Ошибка соединения</div>';
     }
-</script>
+}
 
-<style>
-    .card {
-        border: none;
-        border-radius: 16px;
+async function doRegister() {
+    const login = document.getElementById('regLogin').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirmPassword = document.getElementById('regConfirmPassword').value;
+    const result = document.getElementById('regResult');
+
+    if (!login || !password || !confirmPassword) {
+        result.innerHTML = '<div class="alert alert-error"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Заполните все поля</div>';
+        return;
     }
-</style>
+    if (password !== confirmPassword) {
+        result.innerHTML = '<div class="alert alert-error"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Пароли не совпадают</div>';
+        return;
+    }
+    if (password.length < 4) {
+        result.innerHTML = '<div class="alert alert-error"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Пароль минимум 4 символа</div>';
+        return;
+    }
+    if (login.length < 3) {
+        result.innerHTML = '<div class="alert alert-error"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Логин минимум 3 символа</div>';
+        return;
+    }
+
+    result.innerHTML = '<div class="alert alert-info"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Регистрация...</div>';
+
+    try {
+        const response = await fetch('/Account/Register', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ login, password })
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            result.innerHTML = '<div class="alert alert-success"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Регистрация успешна!</div>';
+            setTimeout(() => showTab('login'), 1000);
+        } else {
+            result.innerHTML = '<div class="alert alert-error"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>' + data.message + '</div>';
+        }
+    } catch (e) {
+        result.innerHTML = '<div class="alert alert-error"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Ошибка соединения</div>';
+    }
+}
+</script>
