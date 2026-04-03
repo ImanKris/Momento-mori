@@ -16,11 +16,21 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Пароль:</label>
-                            <input type="password" id="password" class="form-control" placeholder="Минимум 4 символа" />
+                            <div class="position-relative">
+                                <input type="password" id="password" class="form-control pe-5" placeholder="Минимум 4 символа" />
+                                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y pe-3" onclick="togglePassword('password', this)" style="text-decoration: none;">
+                                    👁️
+                                </button>
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Подтверждение пароля:</label>
-                            <input type="password" id="confirmPassword" class="form-control" placeholder="Повторите пароль" />
+                            <div class="position-relative">
+                                <input type="password" id="confirmPassword" class="form-control pe-5" placeholder="Повторите пароль" />
+                                <button type="button" class="btn btn-link position-absolute top-50 end-0 translate-middle-y pe-3" onclick="togglePassword('confirmPassword', this)" style="text-decoration: none;">
+                                    👁️
+                                </button>
+                            </div>
                         </div>
                         <button type="button" class="btn btn-primary w-100" onclick="doRegister()">Зарегистрироваться</button>
                         <div id="regResult" class="mt-3 text-center"></div>
@@ -37,6 +47,17 @@
 </div>
 
 <script>
+    function togglePassword(inputId, btn) {
+        const input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.innerHTML = '🙈';
+        } else {
+            input.type = 'password';
+            btn.innerHTML = '👁️';
+        }
+    }
+
     async function doRegister() {
         const login = document.getElementById('login').value.trim();
         const password = document.getElementById('password').value;
