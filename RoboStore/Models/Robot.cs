@@ -1,4 +1,5 @@
 namespace RoboStore.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Robot
 {
@@ -12,5 +13,6 @@ public class Robot
     public string? SerialNumber { get; set; }
 
     // Навигационные свойства
+    [ForeignKey(nameof(TypeId))]
     public RobotType? RobotType { get; set; }
 }

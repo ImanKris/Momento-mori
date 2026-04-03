@@ -24,7 +24,20 @@
       "Bash(curl:*)",
       "Bash(taskkill /F /IM RoboStore.exe)",
       "Bash(tasklist)",
-      "Bash(taskkill //F //IM RoboStore.exe)"
+      "Bash(taskkill //F //IM RoboStore.exe)",
+      "Bash(ls -la /Users/vladimir/Documents/Momento-mori/*.md)",
+      "Bash(dotnet:*)",
+      "Bash(pkill -f \"RoboStore.dll\")",
+      "Bash(kill -9 5036 5050 4506 613)",
+      "Bash(kill 5114 5420 5418)",
+      "Bash(pkill -9 -f RoboStore)",
+      "Bash(pkill -9 -f dotnet.*run)",
+      "Bash(/dev/null echo:*)",
+      "Bash(echo \"Exit code: $?\")",
+      "Read(//tmp/**)",
+      "Bash(echo '=== User/Cart ===' curl -s -w nHTTP:%{http_code} -b /tmp/c4.txt http://127.0.0.1:5100/User/Cart)",
+      "Bash(echo '=== Test: Admin/Backup ===' curl -s -w nHTTP:%{http_code} -b /tmp/c4.txt http://127.0.0.1:5100/Admin/Backup)",
+      "Bash(echo '=== Check Backup route ===' curl -s -w nHTTP:%{http_code} -b /tmp/c4.txt http://127.0.0.1:5100/Backup)"
     ]
   }
 }

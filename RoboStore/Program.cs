@@ -21,6 +21,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
+        options.Cookie.Name = ".RoboStore.Auth";
+        options.Cookie.Path = "/";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.None;
+        options.ExpireTimeSpan = TimeSpan.FromHours(24);
+        options.Cookie.SameSite = SameSiteMode.Lax;
     });
 builder.Services.AddSession(options =>
 {
