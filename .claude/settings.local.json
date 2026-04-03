@@ -37,7 +37,11 @@
       "Read(//tmp/**)",
       "Bash(echo '=== User/Cart ===' curl -s -w nHTTP:%{http_code} -b /tmp/c4.txt http://127.0.0.1:5100/User/Cart)",
       "Bash(echo '=== Test: Admin/Backup ===' curl -s -w nHTTP:%{http_code} -b /tmp/c4.txt http://127.0.0.1:5100/Admin/Backup)",
-      "Bash(echo '=== Check Backup route ===' curl -s -w nHTTP:%{http_code} -b /tmp/c4.txt http://127.0.0.1:5100/Backup)"
+      "Bash(echo '=== Check Backup route ===' curl -s -w nHTTP:%{http_code} -b /tmp/c4.txt http://127.0.0.1:5100/Backup)",
+      "Bash(pkill -f \"dotnet run\")",
+      "Bash(ASPNETCORE_ENVIRONMENT=Development dotnet run --urls \"http://localhost:5050\")",
+      "Bash(netstat -ano)",
+      "Bash(ASPNETCORE_ENVIRONMENT=Development dotnet run --urls \"http://localhost:5051\")"
     ]
   }
 }

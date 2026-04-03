@@ -1,26 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "/Users/vladimir/Documents/Momento-mori/RoboStoreBot/RoboStoreBot.csproj": {}
+    "D:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj": {}
   },
   "projects": {
-    "/Users/vladimir/Documents/Momento-mori/RoboStoreBot/RoboStoreBot.csproj": {
+    "D:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/vladimir/Documents/Momento-mori/RoboStoreBot/RoboStoreBot.csproj",
+        "projectUniqueName": "D:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj",
         "projectName": "RoboStoreBot",
-        "projectPath": "/Users/vladimir/Documents/Momento-mori/RoboStoreBot/RoboStoreBot.csproj",
-        "packagesPath": "/Users/vladimir/.nuget/packages/",
-        "outputPath": "/Users/vladimir/Documents/Momento-mori/RoboStoreBot/obj/",
+        "projectPath": "D:\\Projects\\Momento-mori\\RoboStoreBot\\RoboStoreBot.csproj",
+        "packagesPath": "C:\\Users\\иван\\.nuget\\packages\\",
+        "outputPath": "D:\\Projects\\Momento-mori\\RoboStoreBot\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/vladimir/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\иван\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "/opt/homebrew/Cellar/dotnet/10.0.105/libexec/library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -38,8 +37,7 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -55,26 +53,12 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.25, 8.0.25]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.osx-arm64",
-              "version": "[8.0.25, 8.0.25]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.25, 8.0.25]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet/10.0.105/libexec/sdk/10.0.105/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.419/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

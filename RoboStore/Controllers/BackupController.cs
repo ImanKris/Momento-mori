@@ -25,7 +25,7 @@ public class BackupController : Controller
     /// </summary>
     public IActionResult Index()
     {
-        return View();
+        return View("../admin/Backup");
     }
 
     /// <summary>

@@ -71,22 +71,22 @@ public class ManagerController : Controller
 
     [HttpPost]
     [IgnoreAntiforgeryToken]
-    public async Task<IActionResult> UpdateStatus(int orderId, string status)
+    public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request)
     {
-        var order = await _context.Orders.FindAsync(orderId);
+        var order = await _context.Orders.FindAsync(request.orderId);
         if (order == null)
         {
             return Json(new { success = false, message = "Заказ не найден" });
         }
 
         var validStatuses = new[] { "В обработке", "Отправлен", "Выполнен", "Отменён" };
-        if (!validStatuses.Contains(status))
+        if (!validStatuses.Contains(request.status))
         {
             return Json(new { success = false, message = "Недопустимый статус" });
         }
 
         var oldStatus = order.Status;
-        order.Status = status;
+        order.Status = request.status;
         await _context.SaveChangesAsync();
 
         // Логирование
@@ -96,7 +96,7 @@ public class ManagerController : Controller
             ActionDate = DateTime.Now,
             UserLogin = userLogin,
             ActionType = "ORDER_STATUS_CHANGE",
-            Details = $"Заказ #{orderId}: {oldStatus} → {status}"
+            Details = $"Заказ #{request.orderId}: {oldStatus} → {request.status}"
         };
         _context.Logs.Add(log);
         await _context.SaveChangesAsync();
@@ -114,4 +114,10 @@ public class ManagerController : Controller
 
         return View(customers);
     }
+}
+
+public class UpdateStatusRequest
+{
+    public int orderId { get; set; }
+    public string status { get; set; } = string.Empty;
 }

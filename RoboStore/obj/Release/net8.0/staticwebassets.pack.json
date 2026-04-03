@@ -1,0 +1,41 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\Projects\\Momento-mori\\RoboStore\\wwwroot\\css\\site.css",
+      "PackagePath": "staticwebassets\\css\\site.css"
+    },
+    {
+      "Id": "D:\\Projects\\Momento-mori\\RoboStore\\wwwroot\\js\\connectionStatus.js",
+      "PackagePath": "staticwebassets\\js\\connectionStatus.js"
+    },
+    {
+      "Id": "D:\\Projects\\Momento-mori\\RoboStore\\wwwroot\\js\\fallbackStorage.js",
+      "PackagePath": "staticwebassets\\js\\fallbackStorage.js"
+    },
+    {
+      "Id": "D:\\Projects\\Momento-mori\\RoboStore\\wwwroot\\js\\logsSignalR.js",
+      "PackagePath": "staticwebassets\\js\\logsSignalR.js"
+    },
+    {
+      "Id": "D:\\Projects\\Momento-mori\\RoboStore\\wwwroot\\js\\syncTrigger.js",
+      "PackagePath": "staticwebassets\\js\\syncTrigger.js"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.RoboStore.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.build.RoboStore.props",
+      "PackagePath": "build\\RoboStore.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.RoboStore.props",
+      "PackagePath": "buildMultiTargeting\\RoboStore.props"
+    },
+    {
+      "Id": "obj\\Release\\net8.0\\staticwebassets\\msbuild.buildTransitive.RoboStore.props",
+      "PackagePath": "buildTransitive\\RoboStore.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
