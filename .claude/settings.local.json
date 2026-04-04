@@ -49,7 +49,8 @@
       "Bash(taskkill //F //PID 23064)",
       "Bash(start:*)",
       "Bash(taskkill //F //PID 24924)",
-      "Bash(taskkill //F //PID 21232)"
+      "Bash(taskkill //F //PID 21232)",
+      "Bash(powershell -Command \"Compress-Archive -Path './publish/*' -DestinationPath './robostore-deploy.zip' -Force\")"
     ]
   }
 }

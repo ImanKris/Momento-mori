@@ -131,3 +131,7 @@ D:\Projects\Momento-mori\RoboStore\obj\Release\net8.0\refint\RoboStore.dll
 D:\Projects\Momento-mori\RoboStore\obj\Release\net8.0\RoboStore.pdb
 D:\Projects\Momento-mori\RoboStore\obj\Release\net8.0\RoboStore.genruntimeconfig.cache
 D:\Projects\Momento-mori\RoboStore\obj\Release\net8.0\ref\RoboStore.dll
+D:\Projects\Momento-mori\RoboStore\bin\Release\net8.0\publish\web.config
+D:\Projects\Momento-mori\RoboStore\bin\Release\net8.0\web.config
+D:\Projects\Momento-mori\RoboStore\bin\Release\net8.0\publish\RoboStore.deps.json
+D:\Projects\Momento-mori\RoboStore\bin\Release\net8.0\publish\RoboStore.runtimeconfig.json
