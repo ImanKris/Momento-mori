@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
 using RoboStore.Models;
+using RoboStore.Services;
 
 namespace RoboStore.Controllers;
 
@@ -10,10 +11,12 @@ namespace RoboStore.Controllers;
 public class AdminController : Controller
 {
     private readonly RoboStoreDbContext _context;
+    private readonly LogBroadcastService _logBroadcast;
 
-    public AdminController(RoboStoreDbContext context)
+    public AdminController(RoboStoreDbContext context, LogBroadcastService logBroadcast)
     {
         _context = context;
+        _logBroadcast = logBroadcast;
     }
 
     public IActionResult Index()
@@ -100,6 +103,7 @@ public class AdminController : Controller
         };
         _context.Logs.Add(log);
         await _context.SaveChangesAsync();
+        await _logBroadcast.BroadcastAsync(log);
 
         TempData["Message"] = "Робот успешно создан";
         return RedirectToAction("Robots");
@@ -176,6 +180,7 @@ public class AdminController : Controller
         };
         _context.Logs.Add(log);
         await _context.SaveChangesAsync();
+        await _logBroadcast.BroadcastAsync(log);
 
         TempData["Message"] = "Робот обновлён";
         return RedirectToAction("Robots");
@@ -211,6 +216,7 @@ public class AdminController : Controller
 
             _context.Robots.Remove(robot);
             await _context.SaveChangesAsync();
+            await _logBroadcast.BroadcastAsync(log);
 
             TempData["Message"] = "Робот удалён";
         }
@@ -232,22 +238,27 @@ public class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateUserRole(int userId, string newRole)
+    public async Task<IActionResult> UpdateUserRole([FromBody] UpdateRoleRequest request)
     {
-        var user = await _context.Users.FindAsync(userId);
+        if (request == null || request.userId <= 0 || string.IsNullOrEmpty(request.newRole))
+        {
+            return Json(new { success = false, message = "Неверные параметры" });
+        }
+
+        var user = await _context.Users.FindAsync(request.userId);
         if (user == null)
         {
             return Json(new { success = false, message = "Пользователь не найден" });
         }
 
         var validRoles = new[] { "User", "Manager", "Admin" };
-        if (!validRoles.Contains(newRole))
+        if (!validRoles.Contains(request.newRole))
         {
             return Json(new { success = false, message = "Недопустимая роль" });
         }
 
         var oldRole = user.Role;
-        user.Role = newRole;
+        user.Role = request.newRole;
         await _context.SaveChangesAsync();
 
         // Логирование
@@ -256,10 +267,11 @@ public class AdminController : Controller
             ActionDate = DateTime.Now,
             UserLogin = User.Identity?.Name ?? "Unknown",
             ActionType = "USER_ROLE_CHANGED",
-            Details = $"Пользователь {user.Login}: {oldRole} → {newRole}"
+            Details = $"Пользователь {user.Login}: {oldRole} → {request.newRole}"
         };
         _context.Logs.Add(log);
         await _context.SaveChangesAsync();
+        await _logBroadcast.BroadcastAsync(log);
 
         return Json(new { success = true, message = "Роль обновлена" });
     }
@@ -295,4 +307,10 @@ public class AdminController : Controller
 
         return description;
     }
+}
+
+public class UpdateRoleRequest
+{
+    public int userId { get; set; }
+    public string newRole { get; set; } = string.Empty;
 }

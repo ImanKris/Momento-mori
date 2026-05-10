@@ -199,6 +199,11 @@
 /Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/rjsmrazor.dswa.cache.json
 /Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json
 /Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/scopedcss/bundle/RoboStore.styles.css
+/Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/compressed/gcf18cs4mx-{0}-i17763unga-i17763unga.gz
+/Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/compressed/35xx9hm5p9-{0}-x8p5webzdi-x8p5webzdi.gz
+/Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/compressed/q7kq98ckgt-{0}-i3bnqg8206-i3bnqg8206.gz
+/Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/compressed/wsgnle93wi-{0}-nkjmsykr3q-nkjmsykr3q.gz
+/Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/compressed/d0xwvrnfj4-{0}-xdsdzmj2wd-xdsdzmj2wd.gz
 /Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/staticwebassets.build.json
 /Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/staticwebassets.build.json.cache
 /Users/vladimir/Documents/Momento-mori/RoboStore/obj/Debug/net10.0/staticwebassets.development.json

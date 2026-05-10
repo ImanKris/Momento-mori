@@ -35,19 +35,19 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        if (string.IsNullOrEmpty(request.Login) || string.IsNullOrEmpty(request.Password))
+        if (string.IsNullOrEmpty(request.login) || string.IsNullOrEmpty(request.password))
         {
             return Json(new { success = false, message = "Заполните все поля" });
         }
 
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.Login);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Login == request.login);
 
         if (user == null)
         {
             return Json(new { success = false, message = "Пользователь не найден" });
         }
 
-        if (!VerifyPassword(request.Password, user.PasswordHash ?? ""))
+        if (!VerifyPassword(request.password, user.PasswordHash ?? ""))
         {
             return Json(new { success = false, message = "Неверный пароль" });
         }
@@ -66,30 +66,30 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
-        if (string.IsNullOrEmpty(request.Login) || string.IsNullOrEmpty(request.Password))
+        if (string.IsNullOrEmpty(request.login) || string.IsNullOrEmpty(request.password))
         {
             return Json(new { success = false, message = "Заполните все поля" });
         }
 
-        if (request.Password.Length < 4)
+        if (request.password.Length < 4)
         {
             return Json(new { success = false, message = "Пароль должен быть не менее 4 символов" });
         }
 
-        if (request.Login.Length < 3)
+        if (request.login.Length < 3)
         {
             return Json(new { success = false, message = "Логин должен быть не менее 3 символов" });
         }
 
-        if (await _context.Users.AnyAsync(u => u.Login == request.Login))
+        if (await _context.Users.AnyAsync(u => u.Login == request.login))
         {
             return Json(new { success = false, message = "Логин уже занят" });
         }
 
         var user = new User
         {
-            Login = request.Login,
-            PasswordHash = HashPassword(request.Password),
+            Login = request.login,
+            PasswordHash = HashPassword(request.password),
             Role = "User",
             CreatedAt = DateTime.Now
         };
@@ -144,12 +144,12 @@ public class AccountController : Controller
 
 public class LoginRequest
 {
-    public string Login { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
+    public string login { get; set; } = string.Empty;
+    public string password { get; set; } = string.Empty;
 }
 
 public class RegisterRequest
 {
-    public string Login { get; set; } = string.Empty;
-    public string Password { get; set; } = string.Empty;
+    public string login { get; set; } = string.Empty;
+    public string password { get; set; } = string.Empty;
 }

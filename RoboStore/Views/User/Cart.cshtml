@@ -4,64 +4,191 @@
     ViewData["Title"] = "Корзина";
 }
 
-<h2 class="mb-4">Корзина</h2>
+<div class="page-header">
+    <h1 class="page-title">Корзина</h1>
+    <p class="page-subtitle">Выберите роботов для покупки</p>
+</div>
 
 @if (TempData["Message"] != null)
 {
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success mb-6">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
         @TempData["Message"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 }
 
-@if (Model != null && Model.Any())
-{
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Название робота</th>
-                    <th>Тип</th>
-                    <th>Цена</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < Model.Count; i++)
-                {
-                    <tr>
-                        <td>@(i + 1)</td>
-                        <td>@Model[i].Model</td>
-                        <td>@Model[i].Type</td>
-                        <td>@Model[i].Price.ToString("N0") руб.</td>
-                        <td>
-                            <a asp-action="RemoveFromCart" asp-route-id="@Model[i].Id" class="btn btn-danger btn-sm">Удалить</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-            <tfoot class="table-light">
-                <tr>
-                    <td colspan="3" class="text-end"><strong>Итого:</strong></td>
-                    <td class="fs-5 fw-bold text-success">@ViewBag.Total.ToString("N0") руб.</td>
-                    <td></td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+<div id="cartContent">
+    <!-- Cart content will be loaded dynamically -->
+</div>
 
-    <div class="d-flex gap-2 flex-wrap">
-        <a asp-action="Checkout" class="btn btn-primary btn-lg">Оформить заказ</a>
-        <a asp-action="ClearCart" class="btn btn-outline-secondary">Очистить корзину</a>
-        <a asp-action="Index" class="btn btn-outline-primary">Продолжить покупки</a>
-    </div>
+<script>
+function loadCart() {
+    const cart = JSON.parse(localStorage.getItem('robostore_cart') || '[]');
+    const container = document.getElementById('cartContent');
+
+    if (cart.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <path d="M16 10a4 4 0 01-8 0"/>
+                    </svg>
+                </div>
+                <h3 class="empty-state-title">Корзина пуста</h3>
+                <p class="empty-state-text">Добавьте роботов из каталога</p>
+                <a href="/User/Index" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/>
+                        <rect x="14" y="3" width="7" height="7"/>
+                        <rect x="3" y="14" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/>
+                    </svg>
+                    Перейти в каталог
+                </a>
+            </div>
+        `;
+        return;
+    }
+
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    let itemsHtml = cart.map(item => `
+        <div class="cart-item">
+            <div class="cart-item-image">
+                <span style="font-size: 40px;">🤖</span>
+            </div>
+            <div class="cart-item-info">
+                <h3 class="cart-item-title">${item.name}</h3>
+                <p class="cart-item-category">Робот-помощник</p>
+            </div>
+            <div class="cart-item-price">
+                ${(item.price * item.quantity).toLocaleString('ru-RU')} ₽
+            </div>
+            <div class="cart-item-actions">
+                <button onclick="removeFromCart(${item.id})" class="cart-item-remove" title="Удалить">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                        <line x1="10" y1="11" x2="10" y2="17"/>
+                        <line x1="14" y1="11" x2="14" y2="17"/>
+                    </svg>
+                </button>
+                <div class="cart-item-quantity">
+                    <button onclick="updateQuantity(${item.id}, -1)" class="quantity-btn">−</button>
+                    <span style="min-width: 30px; text-align: center; color: var(--text-primary);">${item.quantity}</span>
+                    <button onclick="updateQuantity(${item.id}, 1)" class="quantity-btn">+</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+
+    container.innerHTML = `
+        <div class="cart-layout">
+            <div class="cart-items">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Товары (${cart.length})</h2>
+                    </div>
+                    <div class="card-body" style="padding: 0;">
+                        ${itemsHtml}
+                    </div>
+                </div>
+            </div>
+
+            <div class="cart-summary">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Итого</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="summary-row">
+                            <span>Товары (${cart.length})</span>
+                            <span>${total.toLocaleString('ru-RU')} ₽</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Доставка</span>
+                            <span class="text-success">Бесплатно</span>
+                        </div>
+                        <div class="summary-total">
+                            <span>К оплате</span>
+                            <span>${total.toLocaleString('ru-RU')} ₽</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <a href="/User/Checkout" class="btn btn-primary btn-xl btn-block btn-glow">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                                <polyline points="22 4 12 14.01 9 11.01"/>
+                            </svg>
+                            Оформить заказ
+                        </a>
+                        <div class="d-flex gap-3 mt-4">
+                            <a href="/User/Index" class="btn btn-ghost btn-sm flex-1">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="3" width="7" height="7"/>
+                                    <rect x="14" y="3" width="7" height="7"/>
+                                    <rect x="3" y="14" width="7" height="7"/>
+                                    <rect x="14" y="14" width="7" height="7"/>
+                                </svg>
+                                Каталог
+                            </a>
+                            <button onclick="clearCart()" class="btn btn-ghost btn-sm flex-1">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                                </svg>
+                                Очистить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
 }
-else
-{
-    <div class="alert alert-info text-center py-5">
-        <h4 class="mb-3">Корзина пуста</h4>
-        <p class="text-muted">Добавьте роботов из каталога</p>
-        <a asp-action="Index" class="btn btn-primary">Перейти в каталог</a>
-    </div>
+
+function updateQuantity(id, delta) {
+    let cart = JSON.parse(localStorage.getItem('robostore_cart') || '[]');
+    const item = cart.find(i => i.id === id);
+
+    if (item) {
+        item.quantity += delta;
+        if (item.quantity <= 0) {
+            cart = cart.filter(i => i.id !== id);
+        }
+    }
+
+    localStorage.setItem('robostore_cart', JSON.stringify(cart));
+    document.dispatchEvent(new Event('cartUpdated'));
+    loadCart();
 }
+
+function removeFromCart(id) {
+    let cart = JSON.parse(localStorage.getItem('robostore_cart') || '[]');
+    const item = cart.find(i => i.id === id);
+    cart = cart.filter(i => i.id !== id);
+
+    localStorage.setItem('robostore_cart', JSON.stringify(cart));
+    document.dispatchEvent(new Event('cartUpdated'));
+
+    if (item) {
+        showToast(`${item.name} удален из корзины`, 'warning');
+    }
+    loadCart();
+}
+
+function clearCart() {
+    localStorage.setItem('robostore_cart', JSON.stringify([]));
+    document.dispatchEvent(new Event('cartUpdated'));
+    showToast('Корзина очищена', 'warning');
+    loadCart();
+}
+
+// Load cart on page load
+document.addEventListener('DOMContentLoaded', loadCart);
+</script>

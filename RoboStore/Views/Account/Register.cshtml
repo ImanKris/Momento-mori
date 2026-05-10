@@ -1,90 +1,75 @@
 @{
-    ViewData["Title"] = "Регистрация в RoboStore";
+    ViewData["Title"] = "Регистрация";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card shadow">
-                <div class="card-body p-5">
-                    <h2 class="text-center mb-4">Регистрация</h2>
-
-                    <form id="regForm">
-                        <div class="mb-3">
-                            <label class="form-label">Логин:</label>
-                            <input type="text" id="login" class="form-control" placeholder="Придумайте логин" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Пароль:</label>
-                            <input type="password" id="password" class="form-control" placeholder="Минимум 4 символа" />
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Подтверждение пароля:</label>
-                            <input type="password" id="confirmPassword" class="form-control" placeholder="Повторите пароль" />
-                        </div>
-                        <button type="button" class="btn btn-primary w-100" onclick="doRegister()">Зарегистрироваться</button>
-                        <div id="regResult" class="mt-3 text-center"></div>
-                    </form>
-
-                    <hr class="my-4">
-                    <p class="text-center text-muted small mb-0">
-                        Уже есть аккаунт? <a href="/Account/Login">Войти</a>
-                    </p>
-                </div>
+<div class="auth-page">
+    <div class="auth-card">
+        <h1 class="auth-title">Регистрация</h1>
+        <form id="regForm">
+            <div class="form-group">
+                <label class="form-label">Логин</label>
+                <input type="text" id="login" class="form-control" placeholder="Придумайте логин" />
             </div>
+            <div class="form-group">
+                <label class="form-label">Пароль</label>
+                <input type="password" id="password" class="form-control" placeholder="Минимум 4 символа" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Подтверждение пароля</label>
+                <input type="password" id="confirmPassword" class="form-control" placeholder="Повторите пароль" />
+            </div>
+            <button type="button" class="btn btn-primary btn-block" onclick="doRegister()">Создать аккаунт</button>
+            <div id="regResult" class="mt-3 text-center"></div>
+        </form>
+        <div class="auth-footer">
+            Уже есть аккаунт? <a href="/Account/Login">Войти</a>
         </div>
     </div>
 </div>
 
 <script>
-    async function doRegister() {
-        const login = document.getElementById('login').value.trim();
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
+async function doRegister() {
+    const login = document.getElementById('login').value.trim();
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    const result = document.getElementById('regResult');
 
-        if (!login || !password) {
-            document.getElementById('regResult').innerHTML = '<span class="text-danger">Заполните все поля</span>';
-            return;
-        }
+    if (!login || !password || !confirmPassword) {
+        result.innerHTML = '<span class="text-error">Заполните все поля</span>';
+        return;
+    }
+    if (password !== confirmPassword) {
+        result.innerHTML = '<span class="text-error">Пароли не совпадают</span>';
+        return;
+    }
+    if (password.length < 4) {
+        result.innerHTML = '<span class="text-error">Пароль минимум 4 символа</span>';
+        return;
+    }
+    if (login.length < 3) {
+        result.innerHTML = '<span class="text-error">Логин минимум 3 символа</span>';
+        return;
+    }
 
-        if (password !== confirmPassword) {
-            document.getElementById('regResult').innerHTML = '<span class="text-danger">Пароли не совпадают</span>';
-            return;
-        }
+    result.innerHTML = '<span class="text-muted">Регистрация...</span>';
 
-        if (password.length < 4) {
-            document.getElementById('regResult').innerHTML = '<span class="text-danger">Пароль должен быть не менее 4 символов</span>';
-            return;
-        }
-
-        if (login.length < 3) {
-            document.getElementById('regResult').innerHTML = '<span class="text-danger">Логин должен быть не менее 3 символов</span>';
-            return;
-        }
-
-        document.getElementById('regResult').innerHTML = '<span class="text-muted">Регистрация...</span>';
-
+    try {
         const response = await fetch('/Account/Register', {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ login, password })
         });
+        const data = await response.json();
 
-        const result = await response.json();
-
-        if (result.success) {
-            document.getElementById('regResult').innerHTML = '<span class="text-success">Регистрация успешна!</span>';
+        if (data.success) {
+            result.innerHTML = '<span class="text-success">Регистрация успешна!</span>';
             setTimeout(() => window.location.href = '/Account/Login', 1000);
         } else {
-            document.getElementById('regResult').innerHTML = '<span class="text-danger">' + result.message + '</span>';
+            result.innerHTML = '<span class="text-error">' + data.message + '</span>';
         }
+    } catch (e) {
+        result.innerHTML = '<span class="text-error">Ошибка соединения</span>';
     }
+}
 </script>
-
-<style>
-    .card {
-        border: none;
-        border-radius: 16px;
-    }
-</style>

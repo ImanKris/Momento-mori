@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RoboStore.Data;
 using RoboStore.Models;
+using RoboStore.Services;
 
 namespace RoboStore.Controllers;
 
@@ -10,10 +11,12 @@ namespace RoboStore.Controllers;
 public class ManagerController : Controller
 {
     private readonly RoboStoreDbContext _context;
+    private readonly LogBroadcastService _logBroadcast;
 
-    public ManagerController(RoboStoreDbContext context)
+    public ManagerController(RoboStoreDbContext context, LogBroadcastService logBroadcast)
     {
         _context = context;
+        _logBroadcast = logBroadcast;
     }
 
     public IActionResult Index()
@@ -68,22 +71,22 @@ public class ManagerController : Controller
 
     [HttpPost]
     [IgnoreAntiforgeryToken]
-    public async Task<IActionResult> UpdateStatus(int orderId, string status)
+    public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusRequest request)
     {
-        var order = await _context.Orders.FindAsync(orderId);
+        var order = await _context.Orders.FindAsync(request.orderId);
         if (order == null)
         {
             return Json(new { success = false, message = "Заказ не найден" });
         }
 
         var validStatuses = new[] { "В обработке", "Отправлен", "Выполнен", "Отменён" };
-        if (!validStatuses.Contains(status))
+        if (!validStatuses.Contains(request.status))
         {
             return Json(new { success = false, message = "Недопустимый статус" });
         }
 
         var oldStatus = order.Status;
-        order.Status = status;
+        order.Status = request.status;
         await _context.SaveChangesAsync();
 
         // Логирование
@@ -93,10 +96,11 @@ public class ManagerController : Controller
             ActionDate = DateTime.Now,
             UserLogin = userLogin,
             ActionType = "ORDER_STATUS_CHANGE",
-            Details = $"Заказ #{orderId}: {oldStatus} → {status}"
+            Details = $"Заказ #{request.orderId}: {oldStatus} → {request.status}"
         };
         _context.Logs.Add(log);
         await _context.SaveChangesAsync();
+        await _logBroadcast.BroadcastAsync(log);
 
         return Json(new { success = true, message = "Статус обновлён" });
     }
@@ -110,4 +114,10 @@ public class ManagerController : Controller
 
         return View(customers);
     }
+}
+
+public class UpdateStatusRequest
+{
+    public int orderId { get; set; }
+    public string status { get; set; } = string.Empty;
 }

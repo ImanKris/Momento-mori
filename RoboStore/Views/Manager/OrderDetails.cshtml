@@ -4,135 +4,196 @@
     ViewData["Title"] = $"Заказ #{Model.Id}";
 }
 
-<h1 class="mb-4">Заказ #@Model.Id</h1>
-
-<div class="card">
-    <div class="card-header bg-dark text-white">
-        <h5 class="mb-0">Информация о заказе</h5>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-6">
-                <dl class="row">
-                    <dt class="col-sm-4">ID заказа:</dt>
-                    <dd class="col-sm-8">@Model.Id</dd>
-
-                    <dt class="col-sm-4">Дата заказа:</dt>
-                    <dd class="col-sm-8">@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</dd>
-
-                    <dt class="col-sm-4">Текущий статус:</dt>
-                    <dd class="col-sm-8">
-                        <span class="badge @GetStatusBadgeClass(Model.Status) fs-6" id="status-badge">@Model.Status</span>
-                    </dd>
-                </dl>
-            </div>
-            <div class="col-md-6">
-                <dl class="row">
-                    <dt class="col-sm-4">Клиент:</dt>
-                    <dd class="col-sm-8">@Model.User?.Login</dd>
-                </dl>
-            </div>
+<div class="page-header">
+    <a asp-action="Orders" class="btn btn-ghost btn-sm mb-4">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+        </svg>
+        Назад к списку
+    </a>
+    <div class="d-flex align-items-center gap-4">
+        <div class="admin-header-icon" style="width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: rgba(0, 217, 255, 0.1); border-radius: 16px; color: var(--accent-primary);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
         </div>
-
-        <hr>
-
-        <h5>Заказанный робот</h5>
-        <div class="row">
-            <div class="col-md-12">
-                <dl class="row">
-                    <dt class="col-sm-2">Модель:</dt>
-                    <dd class="col-sm-4">@Model.Robot?.Model</dd>
-
-                    <dt class="col-sm-2">Тип:</dt>
-                    <dd class="col-sm-4">@Model.Robot?.Type</dd>
-
-                    <dt class="col-sm-2">Цена:</dt>
-                    <dd class="col-sm-4">@Model.Robot?.Price.ToString("N0") руб.</dd>
-                </dl>
-            </div>
-        </div>
-
-        <hr>
-
-        <h5>Изменить статус</h5>
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-warning @(Model.Status == "В обработке" ? "active" : "")"
-                    onclick="updateStatus(@Model.Id, 'В обработке')">
-                В обработке
-            </button>
-            <button type="button" class="btn btn-outline-info @(Model.Status == "Отправлен" ? "active" : "")"
-                    onclick="updateStatus(@Model.Id, 'Отправлен')">
-                Отправлен
-            </button>
-            <button type="button" class="btn btn-outline-success @(Model.Status == "Выполнен" ? "active" : "")"
-                    onclick="updateStatus(@Model.Id, 'Выполнен')">
-                Выполнен
-            </button>
-            <button type="button" class="btn btn-outline-danger @(Model.Status == "Отменён" ? "active" : "")"
-                    onclick="updateStatus(@Model.Id, 'Отменён')">
-                Отменён
-            </button>
-        </div>
-
-        <div class="mt-3">
-            <a asp-action="Orders" class="btn btn-secondary">Назад к списку</a>
+        <div>
+            <h1 class="page-title">Заказ #@Model.Id</h1>
+            <p class="page-subtitle">Детали и управление заказом</p>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <script>
-        async function updateStatus(orderId, newStatus) {
-            try {
-                const response = await fetch('@Url.Action("UpdateStatus", "Manager")', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ orderId: orderId, status: newStatus })
-                });
+<div class="grid grid-3 gap-6 mb-6">
+    <!-- Order Info -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Информация о заказе</h3>
+        </div>
+        <div class="card-body">
+            <div class="spec-row">
+                <span class="spec-label">ID заказа</span>
+                <span class="spec-value">#@Model.Id</span>
+            </div>
+            <div class="spec-row">
+                <span class="spec-label">Дата</span>
+                <span class="spec-value">@Model.OrderDate.ToString("dd MMMM yyyy, HH:mm")</span>
+            </div>
+            <div class="spec-row">
+                <span class="spec-label">Статус</span>
+                <span class="badge badge-@GetStatusClass(Model.Status)" id="status-badge" style="padding: 6px 12px;">@Model.Status</span>
+            </div>
+        </div>
+    </div>
 
-                const data = await response.json();
+    <!-- Client Info -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Клиент</h3>
+        </div>
+        <div class="card-body">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div style="width: 48px; height: 48px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: var(--bg-primary);">@Model.User?.Login[0]</div>
+                <div>
+                    <div style="font-weight: 700; color: var(--text-primary);">@Model.User?.Login</div>
+                    <div style="font-size: 13px; color: var(--text-muted);">ID: @Model.UserId</div>
+                </div>
+        </div>
+    </div>
 
-                if (data.success) {
-                    const badge = document.getElementById('status-badge');
-                    if (badge) {
-                        badge.textContent = newStatus;
-                        badge.className = 'badge ' + getBadgeClass(newStatus) + ' fs-6';
-                    }
-                } else {
-                    alert(data.message || 'Ошибка при обновлении статуса');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Произошла ошибка при обновлении статуса');
+    <!-- Robot Info -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Робот</h3>
+        </div>
+        <div class="card-body">
+            @if (Model.Robot != null)
+            {
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div style="width: 64px; height: 64px; background: var(--bg-tertiary); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 32px;">🤖</div>
+                    <div>
+                        <div style="font-weight: 700; color: var(--text-primary);">@Model.Robot.Model</div>
+                        <div style="font-size: 13px; color: var(--accent-primary);">@Model.Robot.Type</div>
+                    </div>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-label">Цена</span>
+                    <span class="spec-value" style="font-family: 'Montserrat', sans-serif; font-size: 18px; color: var(--accent-primary);">@Model.Robot.Price.ToString("N0") ₽</span>
+                </div>
             }
-        }
-
-        function getBadgeClass(status) {
-            switch (status) {
-                case 'Выполнен': return 'bg-success';
-                case 'В обработке': return 'bg-warning text-dark';
-                case 'Отправлен': return 'bg-info';
-                case 'Доставлен': return 'bg-success';
-                case 'Отменён': return 'bg-danger';
-                default: return 'bg-secondary';
+            else
+            {
+                <p style="color: var(--text-muted);">Информация о товаре недоступна</p>
             }
-        }
-    </script>
-}
+        </div>
+    </div>
+</div>
+
+<!-- Status Actions -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Изменить статус</h3>
+    </div>
+    <div class="card-body">
+        <div class="d-flex gap-3 flex-wrap">
+            <button type="button" onclick="updateStatus(@Model.Id, 'В обработке', this)" data-status="В обработке" class="btn @(Model.Status == "В обработке" ? "btn-primary" : "btn-secondary")">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                </svg>
+                В обработке
+            </button>
+            <button type="button" onclick="updateStatus(@Model.Id, 'Отправлен', this)" data-status="Отправлен" class="btn @(Model.Status == "Отправлен" ? "btn-primary" : "btn-secondary")">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="3" width="15" height="13"/>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+                    <circle cx="5.5" cy="18.5" r="2.5"/>
+                    <circle cx="18.5" cy="18.5" r="2.5"/>
+                </svg>
+                Отправлен
+            </button>
+            <button type="button" onclick="updateStatus(@Model.Id, 'Выполнен', this)" data-status="Выполнен" class="btn @(Model.Status == "Выполнен" ? "btn-primary" : "btn-secondary")">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                    <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Выполнен
+            </button>
+            <button type="button" onclick="updateStatus(@Model.Id, 'Отменён', this)" data-status="Отменён" class="btn @(Model.Status == "Отменён" ? "btn-danger" : "btn-ghost")">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+                Отменён
+            </button>
+        </div>
+    </div>
+</div>
 
 @{
-    string GetStatusBadgeClass(string status)
+    string GetStatusClass(string status) => status switch
     {
-        return status switch
-        {
-            "Выполнен" => "bg-success",
-            "В обработке" => "bg-warning text-dark",
-            "Отправлен" => "bg-info",
-            "Доставлен" => "bg-success",
-            "Отменён" => "bg-danger",
-            _ => "bg-secondary"
-        };
+        "Выполнен" => "success",
+        "В обработке" => "warning",
+        "Отправлен" => "primary",
+        "Отменён" => "error",
+        _ => "info"
+    };
+}
+
+@section Scripts {
+<script>
+async function updateStatus(orderId, newStatus, btn) {
+    try {
+        const response = await fetch('@Url.Action("UpdateStatus", "Manager")', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+            },
+            body: JSON.stringify({ orderId: orderId, status: newStatus })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            const badge = document.getElementById('status-badge');
+            if (badge) {
+                badge.textContent = newStatus;
+                badge.className = 'badge badge-' + getStatusClass(newStatus);
+            }
+            // Update button states
+            document.querySelectorAll('.card-body .btn').forEach(b => {
+                if (b.dataset.status === 'Отменён') {
+                    b.className = 'btn btn-ghost';
+                } else {
+                    b.className = b.className.replace('btn-primary', 'btn-secondary');
+                }
+            });
+            if (btn) btn.className = 'btn btn-primary';
+            showToast('Статус обновлен', 'success');
+        } else {
+            showToast(data.message || 'Ошибка при обновлении статуса', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Ошибка при обновлении статуса', 'error');
     }
+}
+
+function getStatusClass(status) {
+    switch (status) {
+        case 'Выполнен': return 'success';
+        case 'В обработке': return 'warning';
+        case 'Отправлен': return 'primary';
+        case 'Отменён': return 'error';
+        default: return 'info';
+    }
+}
+</script>
 }
