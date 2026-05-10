@@ -9,99 +9,99 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = RoboStore
 build_property.RootNamespace = RoboStore
-build_property.ProjectDir = D:\Projects\Momento-mori\RoboStore\
+build_property.ProjectDir = C:\Projects\Momento-mori\RoboStore\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = D:\Projects\Momento-mori\RoboStore
+build_property.MSBuildProjectDirectory = C:\Projects\Momento-mori\RoboStore
 build_property._RazorSourceGeneratorDebug = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/Account/Dashboard.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/Account/Dashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxEYXNoYm9hcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/Account/Login.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/Account/Register.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/admin/CreateRobot.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/admin/CreateRobot.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcYWRtaW5cQ3JlYXRlUm9ib3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/admin/EditRobot.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/admin/EditRobot.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcYWRtaW5cRWRpdFJvYm90LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/admin/Index.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/admin/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcYWRtaW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/admin/Logs.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/admin/Logs.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcYWRtaW5cTG9ncy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/admin/Robots.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/admin/Robots.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcYWRtaW5cUm9ib3RzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/admin/Users.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/admin/Users.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcYWRtaW5cVXNlcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/Home/Index.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/Manager/Customers.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/Manager/Customers.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFuYWdlclxDdXN0b21lcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/Manager/Index.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/Manager/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFuYWdlclxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/Manager/OrderDetails.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/Manager/OrderDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFuYWdlclxPcmRlckRldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/Manager/Orders.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/Manager/Orders.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWFuYWdlclxPcmRlcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/Shared/_Layout.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/User/Cart.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/User/Cart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxDYXJ0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/User/Details.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/User/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxEZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/User/Index.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/User/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/User/Orders.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/User/Orders.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxPcmRlcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/_ViewImports.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[D:/Projects/Momento-mori/RoboStore/Views/_ViewStart.cshtml]
+[C:/Projects/Momento-mori/RoboStore/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
