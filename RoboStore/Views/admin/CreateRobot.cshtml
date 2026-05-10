@@ -82,6 +82,62 @@
                 <label class="form-label" for="Description">Описание</label>
                 <textarea asp-for="Description" name="Description" class="form-control" rows="4" placeholder="Необязательно — будет сгенерировано автоматически"></textarea>
             </div>
+
+            <div class="form-card-header" style="margin: var(--space-5) calc(var(--space-6) * -1); padding: var(--space-4) var(--space-6); border-top: 1px solid var(--border-subtle);">
+                <h2 class="form-card-title">Характеристики</h2>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label" for="Manufacturer">Производитель</label>
+                    <input asp-for="Manufacturer" name="Manufacturer" class="form-control" placeholder="Например: RoboGuard Industries" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="CountryOfOrigin">Страна производства</label>
+                    <input asp-for="CountryOfOrigin" name="CountryOfOrigin" class="form-control" placeholder="Например: Япония" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="WeightKg">Вес (кг)</label>
+                    <input asp-for="WeightKg" name="WeightKg" class="form-control" type="number" step="0.1" min="0" placeholder="0.0" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Dimensions">Размеры ШxВxГ (см)</label>
+                    <input asp-for="Dimensions" name="Dimensions" class="form-control" placeholder="120x60x90" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="BatteryLifeHours">Время работы (ч)</label>
+                    <input asp-for="BatteryLifeHours" name="BatteryLifeHours" class="form-control" type="number" min="0" placeholder="0" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="PowerSource">Источник питания</label>
+                    <input asp-for="PowerSource" name="PowerSource" class="form-control" placeholder="Аккумулятор Li-Ion 48V" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="MaxSpeedKmh">Макс. скорость (км/ч)</label>
+                    <input asp-for="MaxSpeedKmh" name="MaxSpeedKmh" class="form-control" type="number" min="0" placeholder="0" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="Connectivity">Связь</label>
+                    <input asp-for="Connectivity" name="Connectivity" class="form-control" placeholder="Wi-Fi 6, Bluetooth 5.2" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="OperatingSystem">ОС</label>
+                    <input asp-for="OperatingSystem" name="OperatingSystem" class="form-control" placeholder="ROS 2 (Ubuntu)" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="WarrantyMonths">Гарантия (мес.)</label>
+                    <input asp-for="WarrantyMonths" name="WarrantyMonths" class="form-control" type="number" min="0" placeholder="12" />
+                </div>
+            </div>
         </div>
         <div class="form-card-footer">
             <button type="submit" class="btn btn-primary">

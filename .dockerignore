@@ -1,0 +1,12 @@
+bin/
+obj/
+.git/
+.vs/
+.idea/
+.DS_Store
+*.md
+cookies*.txt
+nul
+RoboStoreBot/
+.claude/
+.devin/

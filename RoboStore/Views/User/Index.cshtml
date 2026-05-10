@@ -121,6 +121,14 @@
                             <div class="product-card-body">
                                 <div class="product-card-category">@robot.Type</div>
                                 <h3 class="product-card-title">@robot.Model</h3>
+                                @if (!string.IsNullOrEmpty(robot.Manufacturer))
+                                {
+                                    <div class="text-muted" style="font-size: 12px; margin-bottom: 4px;">@robot.Manufacturer</div>
+                                }
+                                @if (!string.IsNullOrEmpty(robot.Description))
+                                {
+                                    <p class="text-muted" style="font-size: 12px; line-height: 1.4; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">@robot.Description</p>
+                                }
                                 <div class="product-card-price">
                                     @robot.Price.ToString("N0") ₽
                                 </div>

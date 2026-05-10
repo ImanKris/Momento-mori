@@ -59,7 +59,12 @@ public class UserController : Controller
         }
 
         var robotList = robots.ToList();
-        ViewBag.RobotTypes = _context.RobotTypes.OrderBy(t => t.Name).ToList();
+        // Показываем только те типы, у которых есть роботы в каталоге
+        var usedTypeIds = _context.Robots.Select(r => r.TypeId).Distinct().ToList();
+        ViewBag.RobotTypes = _context.RobotTypes
+            .Where(t => usedTypeIds.Contains(t.Id))
+            .OrderBy(t => t.Name)
+            .ToList();
 
         return View(robotList);
     }

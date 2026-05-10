@@ -157,6 +157,16 @@ public class AdminController : Controller
         existingRobot.Price = robot.Price;
         existingRobot.Stock = robot.Stock;
         existingRobot.SerialNumber = robot.SerialNumber;
+        existingRobot.Manufacturer = robot.Manufacturer;
+        existingRobot.WeightKg = robot.WeightKg;
+        existingRobot.Dimensions = robot.Dimensions;
+        existingRobot.BatteryLifeHours = robot.BatteryLifeHours;
+        existingRobot.PowerSource = robot.PowerSource;
+        existingRobot.MaxSpeedKmh = robot.MaxSpeedKmh;
+        existingRobot.Connectivity = robot.Connectivity;
+        existingRobot.OperatingSystem = robot.OperatingSystem;
+        existingRobot.WarrantyMonths = robot.WarrantyMonths;
+        existingRobot.CountryOfOrigin = robot.CountryOfOrigin;
 
         // Автогенерация описания если пустое
         if (string.IsNullOrWhiteSpace(robot.Description))

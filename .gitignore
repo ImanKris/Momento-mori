@@ -1,0 +1,20 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+*.cache
+*.vs/
+.vs/
+
+## OS
+.DS_Store
+Thumbs.db
+
+## Cookies/temp
+cookies*.txt
+nul
+
+## IDE
+.idea/
+*.swp

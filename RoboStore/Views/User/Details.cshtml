@@ -69,6 +69,7 @@
             }
 
             <div class="product-specs">
+                <h4 style="color: var(--text-primary); margin-bottom: 12px;">Характеристики</h4>
                 <div class="spec-row">
                     <span class="spec-label">Тип</span>
                     <span class="spec-value">@Model.Type</span>
@@ -77,11 +78,81 @@
                     <span class="spec-label">Модель</span>
                     <span class="spec-value">@Model.Model</span>
                 </div>
+                @if (!string.IsNullOrEmpty(Model.Manufacturer))
+                {
+                    <div class="spec-row">
+                        <span class="spec-label">Производитель</span>
+                        <span class="spec-value">@Model.Manufacturer</span>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.CountryOfOrigin))
+                {
+                    <div class="spec-row">
+                        <span class="spec-label">Страна</span>
+                        <span class="spec-value">@Model.CountryOfOrigin</span>
+                    </div>
+                }
                 @if (!string.IsNullOrEmpty(Model.SerialNumber))
                 {
                     <div class="spec-row">
                         <span class="spec-label">Серийный номер</span>
                         <span class="spec-value">@Model.SerialNumber</span>
+                    </div>
+                }
+                @if (Model.WeightKg.HasValue)
+                {
+                    <div class="spec-row">
+                        <span class="spec-label">Вес</span>
+                        <span class="spec-value">@Model.WeightKg.Value кг</span>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Dimensions))
+                {
+                    <div class="spec-row">
+                        <span class="spec-label">Размеры (ШxВxГ)</span>
+                        <span class="spec-value">@Model.Dimensions см</span>
+                    </div>
+                }
+                @if (Model.BatteryLifeHours.HasValue && Model.BatteryLifeHours.Value > 0)
+                {
+                    <div class="spec-row">
+                        <span class="spec-label">Время работы</span>
+                        <span class="spec-value">@Model.BatteryLifeHours.Value ч</span>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.PowerSource))
+                {
+                    <div class="spec-row">
+                        <span class="spec-label">Питание</span>
+                        <span class="spec-value">@Model.PowerSource</span>
+                    </div>
+                }
+                @if (Model.MaxSpeedKmh.HasValue && Model.MaxSpeedKmh.Value > 0)
+                {
+                    <div class="spec-row">
+                        <span class="spec-label">Макс. скорость</span>
+                        <span class="spec-value">@Model.MaxSpeedKmh.Value км/ч</span>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Connectivity))
+                {
+                    <div class="spec-row">
+                        <span class="spec-label">Связь</span>
+                        <span class="spec-value">@Model.Connectivity</span>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.OperatingSystem))
+                {
+                    <div class="spec-row">
+                        <span class="spec-label">ОС</span>
+                        <span class="spec-value">@Model.OperatingSystem</span>
+                    </div>
+                }
+                @if (Model.WarrantyMonths.HasValue && Model.WarrantyMonths.Value > 0)
+                {
+                    <div class="spec-row">
+                        <span class="spec-label">Гарантия</span>
+                        <span class="spec-value">@Model.WarrantyMonths.Value мес.</span>
                     </div>
                 }
                 <div class="spec-row">
